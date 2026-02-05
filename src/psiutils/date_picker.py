@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 from dataclasses import dataclass
 from functools import partial
 from tkcalendar import DateEntry
-from dateutil.parser import parse
 
 from psiutils.text import Text
 
@@ -170,8 +169,7 @@ class DatePicker(tk.Frame):
             increment (int): Number of days to add or subtract.
                 Defaults to 1.
         """
-        date = parse(textvariable.get(), dayfirst=True).date()
-        new_date = date + timedelta(days=increment)
+        new_date = self.date + timedelta(days=increment)
         textvariable.set(new_date.strftime(DATE_FORMAT))
 
 

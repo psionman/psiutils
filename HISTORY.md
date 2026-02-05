@@ -1,5 +1,10 @@
 # Version  history for psiutils
 
+Version 0.2.26 - 05 February 2026
+
+1. Fix date  _date_increment in Date_picker
+------------------------------
+
 Version 0.2.25 - 05 February 2026
 
 1. Fix DatePicker parser
@@ -352,6 +357,7 @@ Version 0.2.23 - 03 February 2026
 ## 0.1.0 - 7 October 2024
 
 1. Initial version
+
 
 
 
