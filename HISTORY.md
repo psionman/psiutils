@@ -1,8 +1,8 @@
 # Version  history for psiutils
 
-Version 0.2.24 - 05 February 2026
+Version 0.2.25 - 05 February 2026
 
-1. Refactor DatePicker and TimePicker
+1. Fix DatePicker parser
 ------------------------------
 
 Version 0.2.23 - 03 February 2026

@@ -143,7 +143,12 @@ class DatePicker(tk.Frame):
         Returns:
             datetime: The selected date parsed from the input field.
         """
-        return parse(self._date_input.get())
+        date_elements = self._date_input.get().split('/')
+        return datetime(
+            year=int(date_elements[2]),
+            month=int(date_elements[1]),
+            day=int(date_elements[0])
+        )
 
     @date.setter
     def date(self, value: datetime) -> None:
