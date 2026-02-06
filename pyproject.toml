@@ -20,6 +20,7 @@ dependencies = [
     "pycairo>=1.28.0",
     "pygments>=2.19.2",
     "pygobject>=3.54.2",
+    "pytest>=9.0.2",
     "structlog>=25.4.0",
     "tkinterweb>=4.4.4",
     "tkinterweb-tkhtml>=1.1.1",
