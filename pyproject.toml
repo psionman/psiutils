@@ -1,6 +1,6 @@
 [project]
 name = "psiutils"
-version = "0.2.26"
+dynamic = ["version"]
 description = "Various TKinter utilities."
 authors = [{name = "Jeff", "email" = "<jeffwatkins2000@gmail.com>"}]
 requires-python = '>= 3.10, < 3.13'
@@ -22,11 +22,18 @@ dependencies = [
     "pygobject>=3.54.2",
     "pytest>=9.0.2",
     "structlog>=25.4.0",
+    "tkcalendar>=1.6.1",
     "tkinterweb>=4.4.4",
     "tkinterweb-tkhtml>=1.1.1",
     "tomli>=2.2.1",
     "tomli-w>=1.2.0",
 ]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/psiutils/_version.py"
 
 [dependency-groups]
 dev = ['pytest']

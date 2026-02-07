@@ -1,7 +1,6 @@
 """Constants for the tkinter psiutils."""
 from enum import Enum, auto
 
-# from .utilities import invert
 from .known_paths import get_documents_dir, get_downloads_dir
 
 DEFAULT_GEOMETRY = '500x400'

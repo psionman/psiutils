@@ -38,11 +38,6 @@ def resource_path(base: Path, relative_path: Path):
     return Path(base_path, relative_path)
 
 
-class Enum():
-    def __init__(self, values: dict) -> None:
-        self.values = invert(values)
-
-
 def confirm_delete(parent: Any) -> str:
     question = txt.DELETE_THESE_ITEMS
     return tk.messagebox.askquestion(
@@ -65,15 +60,6 @@ def create_directories(path: str | Path) -> bool:
                 print(f'Invalid file path: {new_path}')
                 return False
     return True
-
-
-def invert(enum: dict) -> dict:
-    """Add the inverse items to a dictionary."""
-    output = {}
-    for key, item in enum.items():
-        output[key] = item
-        output[item] = key
-    return output
 
 
 def enable_frame(parent: tk.Frame, enable: bool = True) -> None:

@@ -9,6 +9,11 @@ from PIL import Image, ImageTk
 CHECK_BOX_SIZE = (20, 20)
 
 
+class TreeView(ttk.TreeView):
+    def __init__(self) -> None:
+        super().__init__()
+
+
 def sort_treeview(tree: ttk.Treeview, col: int, reverse: bool) -> None:
     """Sort the Treeview by column."""
     children = [

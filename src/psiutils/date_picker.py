@@ -17,7 +17,7 @@ TIME_WIDTH = 3
 INCREMENT_BUTTON_SIZE = 2
 INCREMENT_BUTTON_FONT_SIZE = 8
 DATE_FORMAT = '%d/%m/%Y'
-PICKER_DATE_PATTERN = 'dd/mm/yyyy'
+PICKER_DATE_PATTERN = 'dd/MM/yyyy'
 MAX_HOURS = 23
 MAX_MINS = 59
 TALL_COMBO_PADDING = 6
@@ -72,6 +72,11 @@ class DatePicker(tk.Frame):
             padding=0,)
         style.configure('Tall.TCombobox', padding=TALL_COMBO_PADDING)
 
+        # Exposed for testing and integration
+        self.date_picker = None
+        self.increment_button = None
+        self.decrement_button = None
+
         main_frame = self._picker()
         main_frame.pack()
 
@@ -86,27 +91,27 @@ class DatePicker(tk.Frame):
         frame = ttk.Frame(self)
 
         column = 0
-        date_picker = self._date_picker(frame, self._date_input)
-        date_picker.grid(row=0, column=column, rowspan=2, sticky=tk.NS)
+        self.date_picker = self._date_picker(frame, self._date_input)
+        self.date_picker.grid(row=0, column=column, rowspan=2, sticky=tk.NS)
 
         column += 1
-        button = ttk.Button(
+        self.increment_button = ttk.Button(
             frame,
             text=txt.INCREMENT_ARROW,
             command=partial(self._date_increment, self._date_input),
             width=INCREMENT_BUTTON_SIZE,
             style='Increment.TButton',
             )
-        button.grid(row=0, column=column, padx=PAD)
+        self.increment_button.grid(row=0, column=column, padx=PAD)
 
-        button = ttk.Button(
+        self.decrement_button = ttk.Button(
             frame,
             text=txt.DECREMENT_ARROW,
             command=partial(self._date_increment, self._date_input, -1),
             width=INCREMENT_BUTTON_SIZE,
             style='Increment.TButton',
             )
-        button.grid(row=1, column=column, padx=PAD)
+        self.decrement_button.grid(row=1, column=column, padx=PAD)
 
         column += 1
 
@@ -124,13 +129,12 @@ class DatePicker(tk.Frame):
         Returns:
             DateEntry: A configured calendar date entry widget.
         """
-        event_date = datetime.now()
         return DateEntry(
             master,
             date_pattern=PICKER_DATE_PATTERN,
-            year=event_date.year,
-            month=event_date.month,
-            day=event_date.day,
+            year=self.date.year,
+            month=self.date.month,
+            day=self.date.day,
             textvariable=textvariable,
             )
 
@@ -142,11 +146,11 @@ class DatePicker(tk.Frame):
         Returns:
             datetime: The selected date parsed from the input field.
         """
-        date_elements = self._date_input.get().split('/')
+        day, month, year = map(int, self._date_input.get().split('/'))
         return datetime(
-            year=int(date_elements[2]),
-            month=int(date_elements[1]),
-            day=int(date_elements[0])
+            year=int(year),
+            month=int(month),
+            day=int(day)
         )
 
     @date.setter
@@ -244,6 +248,11 @@ class TimePicker(tk.Frame):
         style = ttk.Style()
         style.configure('Increment.TButton', font=('Helvetica', 8))
 
+        # Exposed for testing and integration
+        self.time_pickers = {}
+        self.increment_buttons = {}
+        self.decrement_buttons = {}
+
         main_frame = self._picker()
         main_frame.grid(row=0, column=0)
 
@@ -260,14 +269,17 @@ class TimePicker(tk.Frame):
         if self.use_labels:
             row = self._label_row(frame, row)
 
-        hour_timer = self._timer_element(frame, self._hour_input, MAX_HOURS)
+        hour_timer = self._timer_element(
+            frame, self._hour_input, 'hours', MAX_HOURS)
         hour_timer.grid(row=row, column=HOUR_COL)
 
-        minute_timer = self._timer_element(frame, self._minute_input)
+        minute_timer = self._timer_element(
+            frame, self._minute_input, 'minutes')
         minute_timer.grid(row=row, column=MINUTE_COL)
 
         if self.use_seconds:
-            second_timer = self._timer_element(frame, self._second_input)
+            second_timer = self._timer_element(
+                frame, self._second_input, 'seconds')
             second_timer.grid(row=row, column=SECOND_COL)
 
         return frame
@@ -280,7 +292,8 @@ class TimePicker(tk.Frame):
         aligned with their corresponding timer controls.
 
         Args:
-            frame (tk.Frame): The parent container in which the labels are placed.
+            frame (tk.Frame): The parent container
+                in which the labels are placed.
             row (int): The grid row index to place the labels on.
 
         Returns:
@@ -301,6 +314,7 @@ class TimePicker(tk.Frame):
             self,
             master: tk.Frame,
             textvariable: tk.StringVar,
+            name: str,
             max_value: int = MAX_MINS,
             ) -> tk.Frame:
         """
@@ -318,34 +332,34 @@ class TimePicker(tk.Frame):
         frame = ttk.Frame(master)
         column = 0
 
-        combobox = ttk.Combobox(
+        self.time_pickers[name] = ttk.Combobox(
             frame,
             textvariable=textvariable,
             values=[f'{x:02d}' for x in range(max_value+1)],
             width=TIME_WIDTH,
             style='Tall.TCombobox',
             )
-        combobox.grid(row=0, column=column, rowspan=2, sticky=tk.W)
+        self.time_pickers[name].grid(row=0, column=column, rowspan=2, sticky=tk.W)
 
         column += 1
 
-        button = ttk.Button(
+        self.increment_buttons[name] = ttk.Button(
             frame,
             text=txt.INCREMENT_ARROW,
             command=partial(self._time_increment, textvariable, 1, max_value),
             width=INCREMENT_BUTTON_SIZE,
             style='Increment.TButton',
             )
-        button.grid(row=0, column=column, padx=PAD)
+        self.increment_buttons[name].grid(row=0, column=column, padx=PAD)
 
-        button = ttk.Button(
+        self.decrement_buttons[name] = ttk.Button(
             frame,
             text=txt.DECREMENT_ARROW,
             command=partial(self._time_increment, textvariable, -1, max_value),
             width=INCREMENT_BUTTON_SIZE,
             style='Increment.TButton',
             )
-        button.grid(row=1, column=column, padx=PAD)
+        self.decrement_buttons[name].grid(row=1, column=column, padx=PAD)
         return frame
 
     def _time_increment(
