@@ -66,3 +66,9 @@ class Status(Enum):
     UPDATED = 4
     ERROR = 5
     WARNING = 6
+
+
+class WidgetState(str, Enum):
+    NORMAL = 'normal'
+    READONLY = 'readonly'
+    DISABLED = 'disabled'

@@ -4,17 +4,15 @@ from tkinter import ttk
 import contextlib
 
 
-from .constants import PAD, COLOURS
-from ._about_frame import AboutFrame
+from psiutils.constants import PAD, COLOURS
+from psiutils._about_frame import AboutFrame as AboutFrameMaster
+from psiutils._scrolling_canvas import ScrollingCanvas as ScrollingCanvasMaster
 
 HAND = 'hand2'
 DIM_TEXT = '#555'
 
-
-class About(AboutFrame):
-    def __init__(self, parent, app_name, about_text, parent_file, data_dir):
-        super().__init__(parent, app_name, about_text, parent_file, data_dir)
-        pass
+About = AboutFrameMaster
+ScrollingCanvas = ScrollingCanvasMaster
 
 
 class PsiText(tk.Text):

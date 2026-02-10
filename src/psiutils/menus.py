@@ -44,8 +44,8 @@ class MenuItem():
     def __repr__(self) -> str:
         return f'MenuItem: {self.text}'
 
-    def enable(self) -> None:
-        enable_menu_items(self.menu, [self], True)
+    def enable(self, enable: bool = True) -> None:
+        enable_menu_items(self.menu, [self], enable)
 
     def disable(self) -> None:
         enable_menu_items(self.menu, [self], False)

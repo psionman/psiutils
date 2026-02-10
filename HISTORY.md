@@ -1,5 +1,30 @@
 # Version  history for psiutils
 
+Version 0.2.28 - 10 February 2026
+
+1. FIx columndefs in CHeckTreeview
+------------------------------
+
+Version 0.2.27 - 09 February 2026
+
+1. Add ScrollingCanvas
+------------------------------
+
+Version 0.2.28 - 09 February 2026
+
+1. ddd
+------------------------------
+
+Version 0.2.27 - 09 February 2026
+
+1. Add ScrollingCanvas
+-----------------------------
+
+Version 0.2.27 - 09 February 2026
+
+1. Add ScrollingCanvas
+------------------------------
+
 Version 0.2.26 - 05 February 2026
 
 1. Fix date  _date_increment in Date_picker
@@ -357,6 +382,11 @@ Version 0.2.23 - 03 February 2026
 ## 0.1.0 - 7 October 2024
 
 1. Initial version
+
+
+
+
+
 
 
 

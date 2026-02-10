@@ -5,17 +5,119 @@ from tkinter import ttk
 import dateutil  # type: ignore
 from dateutil.parser import parse  # type: ignore
 from PIL import Image, ImageTk
+from dataclasses import dataclass
 
 CHECK_BOX_SIZE = (20, 20)
 
 
-class TreeView(ttk.TreeView):
-    def __init__(self) -> None:
-        super().__init__()
+@dataclass
+class ColumnDefn():
+    name: str
+    heading: str
+    width: int
 
 
-def sort_treeview(tree: ttk.Treeview, col: int, reverse: bool) -> None:
+class Treeview(ttk.Treeview):
+    def __init__(self, master, column_defs: dict = None, **kwargs) -> None:
+        super().__init__(master, **kwargs)
+        if not column_defs:
+            column_defs = {}
+        self.column_defs = column_defs
+
+        self._configure_columns()
+
+    def _configure_columns(self) -> None:
+        column_ids = [col_defn.name for col_defn in self.column_defs]
+        self["columns"] = column_ids[1:]
+
+        # Configure each column
+        for index, col_defn in enumerate(self.column_defs):
+            if index == 0:
+                self.column(
+                    "#0",
+                    width=col_defn.width,
+                    minwidth=col_defn.width,
+                    stretch=False,
+                    anchor="center")
+                self._heading('#0', col_defn.heading)
+            else:
+                self.column(
+                    col_defn.name,
+                    width=col_defn.width,
+                    anchor="w",
+                    stretch=True)
+                self._heading(col_defn.name, col_defn.heading)
+
+    @property
+    def columns(self) -> dict[int, str]:
+        return {
+            col_defn.name: column-1
+            for column, col_defn in enumerate(self.column_defs)
+    }
+
+    def _heading(self, col_id: str, heading: str) -> Treeview.heading:
+        return self.heading(
+            col_id,
+            text=heading,
+            command=lambda c=col_id: self._sort_columns(c, False)
+        )
+
+    def populate(self, values: dict[tuples]) -> None:
+        self.delete(*self.get_children())
+        for item in values:
+            item = self.insert('', 'end', values=item)
+
+
+    def select_item(self, column: int | str, value: str) -> None:
+        if isinstance(column, str):
+            column = self.columns[column]
+
+        for iid in self.get_children():
+            values = self.item(iid, "values")
+            if values[column] == value:
+                self.selection_set(iid)
+                break
+
+    def _sort_columns(self, col: int, reverse: bool) -> None:
+        """Sort the Treeview by column."""
+        children = [
+                (self.set(child, col), child) for child in self.get_children('')
+            ]
+        date_children = self._get_date_children(children)
+        if date_children:
+            children = date_children
+        try:
+            children.sort(key=lambda t: float(t[0]), reverse=reverse)
+        except TypeError:
+            children.sort(key=lambda t: t[0], reverse=reverse)
+        except ValueError:
+            children.sort(reverse=reverse)
+
+        for index, (val, child) in enumerate(children):
+            self.move(child, '', index)
+
+        self.heading(col, command=lambda: self._sort_columns(col, not reverse))
+
+    def _get_date_children(self, children) -> list:
+        try:
+            date_children = []
+            for child in children:
+                if len(child[0]) < 8:
+                    is_date = False
+                    break
+                date = parse(child[0])
+                date_children.append((date, child[1]))
+            return date_children
+        except dateutil.parser._parser.ParserError:
+            return []
+
+
+
+def sort_treeview(tree: Treeview, col: int, reverse: bool) -> None:
     """Sort the Treeview by column."""
+    print('*** psiutils  "sort_treeview" called: DEPRECATED ***')
+    print('Use psiutils.Treeviw class instead!!!')
+
     children = [
             (tree.set(child, col), child) for child in tree.get_children('')
         ]
@@ -45,7 +147,7 @@ def sort_treeview(tree: ttk.Treeview, col: int, reverse: bool) -> None:
     tree.heading(col, command=lambda: sort_treeview(tree, col, not reverse))
 
 
-class CheckTreeView(ttk.Treeview):
+class CheckTreeView(Treeview):
     def __init__(
             self,
             master,
@@ -56,11 +158,8 @@ class CheckTreeView(ttk.Treeview):
         :param column_defs: a tuple defining column (key, text, width)
         Other parameters are passed to the `TreeView`.
         """
-        super().__init__(master, **kwargs)
-        self.column_defs = column_defs
+        super().__init__(master, column_defs, **kwargs)
         self["show"] = "tree headings"
-        self._configure_columns()
-
         (
             self.unchecked_image,
             self.checked_image
@@ -85,29 +184,11 @@ class CheckTreeView(ttk.Treeview):
         checked = ImageTk.PhotoImage(checked_img)
         return (unchecked, checked)
 
-    def _configure_columns(self) -> None:
-        column_ids = [col[0] for col in self.column_defs]
-        self["columns"] = column_ids[1:]
-
-        # Configure each column
-        for index, (col_id, heading, width) in enumerate(self.column_defs):
-            if index == 0:
-                self.column(
-                    "#0",
-                    width=width,
-                    minwidth=width,
-                    stretch=False,
-                    anchor="center")
-                self.heading("#0", text=heading)
-            else:
-                self.column(col_id, width=width, anchor="w", stretch=True)
-                self.heading(col_id, text=heading)
-
-    def populate(self, items: list[tuple], checked: bool = False) -> None:
+    def populate(self, values: list[tuple], checked: bool = False) -> None:
         self.delete(*self.get_children())
         item_checked = (self.checked_image
                         if checked else self.unchecked_image)
-        for item in items:
+        for item in values:
             iid = self.insert(
                 parent='',
                 index='end',
