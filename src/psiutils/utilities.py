@@ -1,5 +1,6 @@
 """Common methods for psiutils."""
 import sys
+import os
 from pathlib import Path
 import tkinter as tk
 import ctypes
@@ -7,11 +8,15 @@ from typing import Any
 import platform
 
 from psiconfig import TomlConfig
-from psiutils._logger import psi_logger
-from psiutils._notify import _notify as notify
+from psiutils._logger import psi_logger as logger
 from psiutils.constants import DEFAULT_GEOMETRY
 from psiutils.text import Text
+if 'XDG_CURRENT_DESKTOP' in os.environ:
+    from psiutils._notify import _notify
+    notify = _notify
 
+
+psi_logger = logger
 txt = Text()
 
 
