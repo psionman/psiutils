@@ -1,5 +1,10 @@
 # Version  history for psiutils
 
+Version 0.2.30 - 25 February 2026
+
+1. Add convert button
+------------------------------
+
 Version 0.2.29 - 12 February 2026
 
 1. Remove Notify if no desktop
@@ -387,6 +392,7 @@ Version 0.2.23 - 03 February 2026
 ## 0.1.0 - 7 October 2024
 
 1. Initial version
+
 
 
 

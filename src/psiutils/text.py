@@ -13,6 +13,7 @@ psi_strings = {
     'CODE': 'Code',
     'COMPARE': 'Compare',
     'CONFIG': 'Config',
+    'CONVERT': 'Convert',
     'COPY': 'Copy',
     'DECREMENT_ARROW': '▼',
     'DELETE': 'Delete',

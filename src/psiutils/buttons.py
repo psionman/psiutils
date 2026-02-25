@@ -225,6 +225,7 @@ icon_buttons = {
     'code': (txt.CODE, 'code'),
     'compare': (txt.COMPARE, 'compare'),
     'config': (txt.CONFIG, 'gear'),
+    'convert': (txt.CONVERT, 'convert'),
     'copy_docs': (txt.COPY, 'copy_docs'),
     'copy_clipboard': (txt.COPY, 'copy_clipboard'),
     'delete': (txt.DELETE, 'delete'),
