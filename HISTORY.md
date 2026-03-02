@@ -2,7 +2,7 @@
 
 Version 0.2.31 - 02 March 2026
 
-1. Remove notify
+1. Remove Notify
 ------------------------------
 
 Version 0.2.30 - 25 February 2026
