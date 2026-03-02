@@ -8,7 +8,6 @@ psi-toml>=0.0.12
 psiconfig>=0.0.14
 pycairo>=1.28.0
 Pygments>=2.19.2
-PyGObject>=3.54.2
 structlog>=25.4.0
 tkinterweb>=4.4.4
 tkinterweb-tkhtml>=1.1.1

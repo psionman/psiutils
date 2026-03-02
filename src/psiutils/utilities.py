@@ -11,9 +11,9 @@ from psiconfig import TomlConfig
 from psiutils._logger import psi_logger as logger
 from psiutils.constants import DEFAULT_GEOMETRY
 from psiutils.text import Text
-if 'XDG_CURRENT_DESKTOP' in os.environ:
-    from psiutils._notify import _notify
-    notify = _notify
+# if 'XDG_CURRENT_DESKTOP' in os.environ:
+#     from psiutils._notify import _notify
+#     notify = _notify
 
 
 psi_logger = logger

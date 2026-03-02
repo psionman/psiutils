@@ -171,7 +171,6 @@ dependencies = [
     { name = "psiconfig" },
     { name = "pycairo" },
     { name = "pygments" },
-    { name = "pygobject" },
     { name = "pytest" },
     { name = "structlog" },
     { name = "tkcalendar" },
