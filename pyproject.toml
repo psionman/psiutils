@@ -1,6 +1,6 @@
 [project]
 name = "psiutils"
-version = "0.2.31"
+version = "0.2.33"
 description = "Various TKinter utilities."
 authors = [{name = "Jeff", "email" = "<jeffwatkins2000@gmail.com>"}]
 requires-python = '>= 3.10, < 3.13'
@@ -19,7 +19,6 @@ dependencies = [
     "psiconfig>=0.0.14",
     "pycairo>=1.28.0",
     "pygments>=2.19.2",
-    "pygobject>=3.54.2",
     "pytest>=9.0.2",
     "structlog>=25.4.0",
     "tkcalendar>=1.6.1",
