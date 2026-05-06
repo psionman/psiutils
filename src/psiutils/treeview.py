@@ -55,14 +55,14 @@ class Treeview(ttk.Treeview):
             for column, col_defn in enumerate(self.column_defs)
     }
 
-    def _heading(self, col_id: str, heading: str) -> Treeview.heading:
+    def _heading(self, col_id: str, heading: str) -> ttk.Treeview.heading:
         return self.heading(
             col_id,
             text=heading,
             command=lambda c=col_id: self._sort_columns(c, False)
         )
 
-    def populate(self, values: dict[tuples]) -> None:
+    def populate(self, values: dict[tuple]) -> None:
         self.delete(*self.get_children())
         for item in values:
             item = self.insert('', 'end', values=item)

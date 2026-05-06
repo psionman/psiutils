@@ -1,4 +1,5 @@
 """Button class for Tkinter applications."""
+
 import tkinter as tk
 from tkinter import ttk
 from pathlib import Path
@@ -14,16 +15,17 @@ txt = Text()
 
 class IconButton(ttk.Frame):
     def __init__(
-            self,
-            master,
-            button_text,
-            icon,
-            command=None,
-            dimmable: bool = False,
-            sticky: str = '',
-            icon_path: str = '',
-            **kwargs):
-        super().__init__(master, borderwidth=1, relief='raised', **kwargs)
+        self,
+        master,
+        button_text,
+        icon,
+        command=None,
+        dimmable: bool = False,
+        sticky: str = "",
+        icon_path: str = "",
+        **kwargs,
+    ):
+        super().__init__(master, borderwidth=1, relief="raised", **kwargs)
         self.command = command
         self._state = tk.NORMAL
         self.text = button_text
@@ -31,12 +33,13 @@ class IconButton(ttk.Frame):
 
         # Icon and text
         if not icon_path:
-            icon_path = f'{Path(__file__).parent}/icons/'
-        image = Image.open(f'{icon_path}{icon}.png').resize((16, 16))
+            icon_path = f"{Path(__file__).parent}/icons/"
+        image = Image.open(f"{icon_path}{icon}.png").resize((16, 16))
         photo_image = ImageTk.PhotoImage(image)
 
         self.button_label = ttk.Label(
-            self, text=button_text, image=photo_image, compound=tk.LEFT)
+            self, text=button_text, image=photo_image, compound=tk.LEFT
+        )
         self.button_label.image = photo_image  # Prevent garbage collection
         self.button_label.pack(padx=(3, 5), pady=5)
         self.widget = self.button_label
@@ -48,7 +51,7 @@ class IconButton(ttk.Frame):
         self.dimmable = dimmable
 
     def __repr__(self) -> str:
-        return f'IconButton: {self.text} {self.icon}'
+        return f"IconButton: {self.text} {self.icon}"
 
     def state(self, *args, **kwargs) -> dict:
         return self._state
@@ -65,14 +68,14 @@ class IconButton(ttk.Frame):
 
     def bind_widgets(self):
         for widget in (self, self.button_label):
-            widget.bind('<Button-1>', self._on_click)
-            widget.bind('<Enter>', self._enter_button)
-            widget.bind('<Leave>', lambda e: self.config(relief='raised'))
+            widget.bind("<Button-1>", self._on_click)
+            widget.bind("<Enter>", self._enter_button)
+            widget.bind("<Leave>", lambda e: self.config(relief="raised"))
 
     def _enter_button(self, event) -> None:
         if self._state == tk.DISABLED:
             return
-        self.config(relief='sunken')
+        self.config(relief="sunken")
         event.widget.winfo_toplevel().config(cursor=HAND)
 
     def _on_click(self, *args):
@@ -84,12 +87,12 @@ class IconButton(ttk.Frame):
 
 class Button(ttk.Button):
     def __init__(
-            self,
-            *args,
-            sticky: str = '',
-            dimmable: bool = False,
-            **kwargs: dict,
-            ) -> None:
+        self,
+        *args,
+        sticky: str = "",
+        dimmable: bool = False,
+        **kwargs: dict,
+    ) -> None:
         super().__init__(*args, **kwargs)
 
         self.sticky = sticky
@@ -97,26 +100,24 @@ class Button(ttk.Button):
 
     def enable(self, enable: bool = True) -> None:
         state = tk.NORMAL if enable else tk.DISABLED
-        self['state'] = state
+        self["state"] = state
 
     def disable(self, disable: bool = True) -> None:
         state = tk.DISABLED if disable else tk.NORMAL
-        self['state'] = state
+        self["state"] = state
 
 
 class ButtonFrame(ttk.Frame):
     def __init__(
-            self,
-            master: tk.Frame,
-            orientation: str = tk.HORIZONTAL,
-            **kwargs: dict) -> None:
+        self, master: tk.Frame, orientation: str = tk.HORIZONTAL, **kwargs: dict
+    ) -> None:
         super().__init__(master, **kwargs)
         self._buttons = []
         self._enabled = False
         self.orientation = orientation
 
-        if 'enabled' in kwargs:
-            self._enabled = kwargs['enabled']
+        if "enabled" in kwargs:
+            self._enabled = kwargs["enabled"]
 
         self.icon_buttons = {
             name: IconButton(self, button[0], button[1])
@@ -124,10 +125,11 @@ class ButtonFrame(ttk.Frame):
         }
 
     def icon_button(
-            self,
-            id_: str,
-            command: object = None,
-            dimmable: bool = False,) -> IconButton:
+        self,
+        id_: str,
+        command: object = None,
+        dimmable: bool = False,
+    ) -> IconButton:
         button = self.icon_buttons[id_]
         button.dimmable = dimmable
         button.command = command
@@ -154,8 +156,8 @@ class ButtonFrame(ttk.Frame):
     def enabled(self, value: bool) -> None:
         self._enabled = value
         state = tk.NORMAL if value else tk.DISABLED
-        for button in self. buttons:
-            button.widget['state'] = state
+        for button in self.buttons:
+            button.widget["state"] = state
 
     def enable(self, enable: bool = True) -> None:
         self._enabled = enable
@@ -166,7 +168,7 @@ class ButtonFrame(ttk.Frame):
         self._enable_buttons(self.buttons, False)
 
     def _vertical_buttons(self) -> None:
-        self.rowconfigure(len(self.buttons)-1, weight=1)
+        self.rowconfigure(len(self.buttons) - 1, weight=1)
         for row, button in enumerate(self.buttons):
             pady = PAD
             if row == 0:
@@ -180,7 +182,7 @@ class ButtonFrame(ttk.Frame):
             clickable_widget(button)
 
     def _horizontal_buttons(self) -> None:
-        self.columnconfigure(len(self.buttons)-1, weight=1)
+        self.columnconfigure(len(self.buttons) - 1, weight=1)
         for col, button in enumerate(self.buttons):
             padx = PAD
             if col == 0:
@@ -199,8 +201,8 @@ class ButtonFrame(ttk.Frame):
         for button in buttons:
             if button.dimmable:
                 if isinstance(button, Button):
-                    button['state'] = state
-                    button.bind('<Enter>', enter_widget)
+                    button["state"] = state
+                    button.bind("<Enter>", enter_widget)
                 elif isinstance(button, IconButton):
                     if enable:
                         button.enable()
@@ -212,55 +214,57 @@ def enable_buttons(buttons: list[Button], enable: bool = True):
     state = tk.NORMAL if enable else tk.DISABLED
     for button in buttons:
         if button.dimmable:
-            button['state'] = state
-            button.bind('<Enter>', enter_widget)
+            button["state"] = state
+            button.bind("<Enter>", enter_widget)
 
 
 icon_buttons = {
-    'backup': (txt.BACKUP, 'backup'),
-    'build': (txt.BUILD, 'build'),
-    'check': (txt.CHECK, 'check'),
-    'clear': (txt.CLEAR, 'clear'),
-    'close': (txt.CLOSE, 'cancel'),
-    'code': (txt.CODE, 'code'),
-    'compare': (txt.COMPARE, 'compare'),
-    'config': (txt.CONFIG, 'gear'),
-    'convert': (txt.CONVERT, 'convert'),
-    'copy_docs': (txt.COPY, 'copy_docs'),
-    'copy_clipboard': (txt.COPY, 'copy_clipboard'),
-    'delete': (txt.DELETE, 'delete'),
-    'download': (txt.DOWNLOAD, 'download'),
-    'diff': (txt.DIFF, 'diff'),
-    'done': (txt.DONE, 'done'),
-    'edit': (txt.EDIT, 'edit'),
-    'exit': (txt.EXIT, 'cancel'),
-    'new': (txt.NEW, 'new'),
-    'next': (txt.NEXT, 'next'),
-    'open': (txt.OPEN, 'open'),
-    'pause': (txt.PAUSE, 'pause'),
-    'preferences': (txt.PREFERENCES, 'preferences'),
-    'previous': (txt.PREVIOUS, 'previous'),
-    'process': (txt.PROCESS, 'process'),
-    'redo': (txt.REDO, 'redo'),
-    'refresh': (txt.REFRESH, 'refresh'),
-    'rename': (txt.RENAME, 'rename'),
-    'report': (txt.REPORT, 'report'),
-    'reset': (txt.RESET, 'reset'),
-    'restore': (txt.RESTORE, 'restore'),
-    'restore_database': (txt.RESTORE, 'restore_database'),
-    'restore_page': (txt.RESTORE, 'restore_page'),
-    'revert': (txt.REVERT, 'revert'),
-    'run': (txt.RUN, 'start'),
-    'save': (txt.SAVE, 'save'),
-    'script': (txt.SCRIPT, 'script'),
-    'search': (txt.SEARCH, 'search'),
-    'send': (txt.SEND, 'send'),
-    'start': (txt.START, 'start'),
-    'update': (txt.UPDATE, 'update'),
-    'upgrade': (txt.UPGRADE, 'upgrade'),
-    'upload': (txt.UPLOAD, 'upload'),
-    'use': (txt.USE, 'done'),
-    'windows': (txt.WINDOWS, 'windows'),
+    "backup": (txt.BACKUP, "backup"),
+    "build": (txt.BUILD, "build"),
+    "check": (txt.CHECK, "check"),
+    "clear": (txt.CLEAR, "clear"),
+    "close": (txt.CLOSE, "cancel"),
+    "code": (txt.CODE, "code"),
+    "compare": (txt.COMPARE, "compare"),
+    "config": (txt.CONFIG, "gear"),
+    "convert": (txt.CONVERT, "convert"),
+    "copy_docs": (txt.COPY, "copy_docs"),
+    "copy_clipboard": (txt.COPY, "copy_clipboard"),
+    "delete": (txt.DELETE, "delete"),
+    "download": (txt.DOWNLOAD, "download"),
+    "diff": (txt.DIFF, "diff"),
+    "done": (txt.DONE, "done"),
+    "edit": (txt.EDIT, "edit"),
+    "exit": (txt.EXIT, "cancel"),
+    "help": (txt.HELP, "help"),
+    "new": (txt.NEW, "new"),
+    "next": (txt.NEXT, "next"),
+    "open": (txt.OPEN, "open"),
+    "pause": (txt.PAUSE, "pause"),
+    "preferences": (txt.PREFERENCES, "preferences"),
+    "previous": (txt.PREVIOUS, "previous"),
+    "process": (txt.PROCESS, "process"),
+    "redo": (txt.REDO, "redo"),
+    "refresh": (txt.REFRESH, "refresh"),
+    "rename": (txt.RENAME, "rename"),
+    "report": (txt.REPORT, "report"),
+    "reset": (txt.RESET, "reset"),
+    "restore": (txt.RESTORE, "restore"),
+    "restore_database": (txt.RESTORE, "restore_database"),
+    "restore_page": (txt.RESTORE, "restore_page"),
+    "revert": (txt.REVERT, "revert"),
+    "run": (txt.RUN, "start"),
+    "save": (txt.SAVE, "save"),
+    "script": (txt.SCRIPT, "script"),
+    "search": (txt.SEARCH, "search"),
+    "send": (txt.SEND, "send"),
+    "start": (txt.START, "start"),
+    "undo": (txt.UNDO, "revert"),
+    "update": (txt.UPDATE, "update"),
+    "upgrade": (txt.UPGRADE, "upgrade"),
+    "upload": (txt.UPLOAD, "upload"),
+    "use": (txt.USE, "done"),
+    "windows": (txt.WINDOWS, "windows"),
 }
 
 
@@ -268,16 +272,17 @@ def list_icon_buttons() -> None:
     """List of icon_button."""
     name_length, text_length, icon_length = 15, 10, 15
 
-    print(
-        (f'{"name":<{name_length}} '
-         f'{"text":<{text_length}} '
-         f'{"icon":<{icon_length}}'))
+    print((f"{'name':<{name_length}} {'text':<{text_length}} {'icon':<{icon_length}}"))
 
-    print(f'{"-"*name_length:<{name_length}} '
-          f'{"-"*text_length:<{text_length}} '
-          f'{"-"*icon_length:<{icon_length}}')
+    print(
+        f"{'-' * name_length:<{name_length}} "
+        f"{'-' * text_length:<{text_length}} "
+        f"{'-' * icon_length:<{icon_length}}"
+    )
 
     for name, button in icon_buttons.items():
-        print(f'{name:<{name_length}} '
-              f'{button[0]:<{text_length}} '
-              f'{button[1]:<{icon_length}}')
+        print(
+            f"{name:<{name_length}} "
+            f"{button[0]:<{text_length}} "
+            f"{button[1]:<{icon_length}}"
+        )
