@@ -1,10 +1,31 @@
+
 {
-"python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
-"[python]": {
-"editor.formatOnSave": true,
-"editor.defaultFormatter": "charliermarsh.ruff"
-},
-"editor.codeActionsOnSave": {
-"source.fixAll.ruff": "explicit",
-"source.organizeImports.ruff": "explicit"
+    "python.defaultInterpreterPath": "/home/jeff/projects/psi-utilities/psiutils/.venv/bin/python",
+    "workbench.colorCustomizations": {
+        "activityBar.activeBackground": "#bbbbbb",
+        "activityBar.background": "#dddddd",
+        "activityBar.foreground": "#000000",
+        "activityBarBadge.background": "#dd5555",
+        "activityBarBadge.foreground": "#ffffff",
+        "statusBar.background": "#dddddd",
+        "statusBar.foreground": "#333333",
+        "statusBarItem.hoverBackground": "#bbbbbb",
+        "titleBar.activeBackground": "#dddddd",
+        "titleBar.activeForeground": "#333333"
+    },
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        
+        "editor.codeActionsOnSave": {
+            "source.fixAll.ruff": "explicit",
+            "source.organizeImports.ruff": "explicit",
+            "source.fixAll": "explicit"          // fallback
+        }
+    },
+    // Global linting settings
+    "python.linting.enabled": true,
+    "python.linting.lintOnSave": true,
+    "python.linting.ruffEnabled": true
 }

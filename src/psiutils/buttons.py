@@ -1,44 +1,60 @@
 """Button class for Tkinter applications."""
 
 import tkinter as tk
-from tkinter import ttk
+from dataclasses import dataclass
 from pathlib import Path
+from tkinter import ttk
+
 from PIL import Image, ImageTk
 
-from psiutils.text import Text
-
 from psiutils.constants import PAD, Pad
-from psiutils.widgets import enter_widget, clickable_widget, HAND
+from psiutils.text import Text
+from psiutils.widgets import HAND, clickable_widget, enter_widget
 
 txt = Text()
+
+COLOURS = {
+    "red": (255, 0, 0),
+    "blue": (0, 0, 255),
+    "green": (0, 160, 20),
+    "orange": (212, 100, 50),
+}
+
+
+@dataclass(slots=True)
+class IconButtonConfig:
+    text: str
+    icon: str
+    colour: str | None = None
 
 
 class IconButton(ttk.Frame):
     def __init__(
         self,
         master,
-        button_text,
+        text,
         icon,
         command=None,
         dimmable: bool = False,
         sticky: str = "",
         icon_path: str = "",
+        colour: str | tuple(int) = "",
         **kwargs,
     ):
         super().__init__(master, borderwidth=1, relief="raised", **kwargs)
         self.command = command
         self._state = tk.NORMAL
-        self.text = button_text
+        self.text = text
         self.icon = icon
+        self.colour = colour
 
         # Icon and text
         if not icon_path:
             icon_path = f"{Path(__file__).parent}/icons/"
-        image = Image.open(f"{icon_path}{icon}.png").resize((16, 16))
-        photo_image = ImageTk.PhotoImage(image)
+        photo_image = self._get_photo_image(icon_path, icon)
 
         self.button_label = ttk.Label(
-            self, text=button_text, image=photo_image, compound=tk.LEFT
+            self, text=text, image=photo_image, compound=tk.LEFT
         )
         self.button_label.image = photo_image  # Prevent garbage collection
         self.button_label.pack(padx=(3, 5), pady=5)
@@ -49,6 +65,38 @@ class IconButton(ttk.Frame):
 
         self.sticky = sticky
         self.dimmable = dimmable
+
+    def _get_photo_image(
+        self,
+        path: Path,
+        icon: str,
+    ) -> ImageTk.PhotoImage:
+        image = (
+            Image.open(f"{path}{icon}.png").resize((16, 16)).convert("RGBA")
+        )
+
+        image = self._colour_image(image)
+
+        photo_image = ImageTk.PhotoImage(image)
+        return photo_image
+
+    def _colour_image(self, image: Image) -> Image:
+        if not self.colour:
+            return image
+
+        if isinstance(self.colour, str):
+            r, g, b = COLOURS[self.colour]
+
+        if isinstance(self.colour, tuple):
+            r, g, b = self.colour
+
+        pixels = image.load()
+
+        for y in range(image.size[1]):
+            for x in range(image.size[0]):
+                _, _, _, a = pixels[x, y]
+                pixels[x, y] = (r, g, b, a)
+        return image
 
     def __repr__(self) -> str:
         return f"IconButton: {self.text} {self.icon}"
@@ -109,7 +157,10 @@ class Button(ttk.Button):
 
 class ButtonFrame(ttk.Frame):
     def __init__(
-        self, master: tk.Frame, orientation: str = tk.HORIZONTAL, **kwargs: dict
+        self,
+        master: tk.Frame,
+        orientation: str = tk.HORIZONTAL,
+        **kwargs: dict,
     ) -> None:
         super().__init__(master, **kwargs)
         self._buttons = []
@@ -120,8 +171,10 @@ class ButtonFrame(ttk.Frame):
             self._enabled = kwargs["enabled"]
 
         self.icon_buttons = {
-            name: IconButton(self, button[0], button[1])
-            for name, button in icon_buttons.items()
+            name: IconButton(
+                self, config.text, config.icon, colour=config.colour
+            )
+            for name, config in icon_buttons.items()
         }
 
     def icon_button(
@@ -129,10 +182,13 @@ class ButtonFrame(ttk.Frame):
         id_: str,
         command: object = None,
         dimmable: bool = False,
+        text: str = "",
     ) -> IconButton:
         button = self.icon_buttons[id_]
         button.dimmable = dimmable
         button.command = command
+        if text:
+            button.text = text
         return button
 
     @property
@@ -219,52 +275,56 @@ def enable_buttons(buttons: list[Button], enable: bool = True):
 
 
 icon_buttons = {
-    "backup": (txt.BACKUP, "backup"),
-    "build": (txt.BUILD, "build"),
-    "check": (txt.CHECK, "check"),
-    "clear": (txt.CLEAR, "clear"),
-    "close": (txt.CLOSE, "cancel"),
-    "code": (txt.CODE, "code"),
-    "compare": (txt.COMPARE, "compare"),
-    "config": (txt.CONFIG, "gear"),
-    "convert": (txt.CONVERT, "convert"),
-    "copy_docs": (txt.COPY, "copy_docs"),
-    "copy_clipboard": (txt.COPY, "copy_clipboard"),
-    "delete": (txt.DELETE, "delete"),
-    "download": (txt.DOWNLOAD, "download"),
-    "diff": (txt.DIFF, "diff"),
-    "done": (txt.DONE, "done"),
-    "edit": (txt.EDIT, "edit"),
-    "exit": (txt.EXIT, "cancel"),
-    "help": (txt.HELP, "help"),
-    "new": (txt.NEW, "new"),
-    "next": (txt.NEXT, "next"),
-    "open": (txt.OPEN, "open"),
-    "pause": (txt.PAUSE, "pause"),
-    "preferences": (txt.PREFERENCES, "preferences"),
-    "previous": (txt.PREVIOUS, "previous"),
-    "process": (txt.PROCESS, "process"),
-    "redo": (txt.REDO, "redo"),
-    "refresh": (txt.REFRESH, "refresh"),
-    "rename": (txt.RENAME, "rename"),
-    "report": (txt.REPORT, "report"),
-    "reset": (txt.RESET, "reset"),
-    "restore": (txt.RESTORE, "restore"),
-    "restore_database": (txt.RESTORE, "restore_database"),
-    "restore_page": (txt.RESTORE, "restore_page"),
-    "revert": (txt.REVERT, "revert"),
-    "run": (txt.RUN, "start"),
-    "save": (txt.SAVE, "save"),
-    "script": (txt.SCRIPT, "script"),
-    "search": (txt.SEARCH, "search"),
-    "send": (txt.SEND, "send"),
-    "start": (txt.START, "start"),
-    "undo": (txt.UNDO, "revert"),
-    "update": (txt.UPDATE, "update"),
-    "upgrade": (txt.UPGRADE, "upgrade"),
-    "upload": (txt.UPLOAD, "upload"),
-    "use": (txt.USE, "done"),
-    "windows": (txt.WINDOWS, "windows"),
+    "backup": IconButtonConfig(txt.BACKUP, "backup"),
+    "build": IconButtonConfig(txt.BUILD, "build"),
+    "check": IconButtonConfig(txt.CHECK, "check"),
+    "clear": IconButtonConfig(txt.CLEAR, "clear"),
+    "close": IconButtonConfig(txt.CLOSE, "cancel"),
+    "close-red": IconButtonConfig(txt.CLOSE, "cancel", "red"),
+    "code": IconButtonConfig(txt.CODE, "code"),
+    "code-blue": IconButtonConfig(txt.CODE, "code", "blue"),
+    "compare": IconButtonConfig(txt.COMPARE, "compare"),
+    "compare-orange": IconButtonConfig(txt.COMPARE, "compare", "orange"),
+    "config": IconButtonConfig(txt.CONFIG, "gear"),
+    "convert": IconButtonConfig(txt.CONVERT, "convert"),
+    "copy_docs": IconButtonConfig(txt.COPY, "copy_docs"),
+    "copy_clipboard": IconButtonConfig(txt.COPY, "copy_clipboard"),
+    "delete": IconButtonConfig(txt.DELETE, "delete"),
+    "download": IconButtonConfig(txt.DOWNLOAD, "download"),
+    "diff": IconButtonConfig(txt.DIFF, "diff"),
+    "done": IconButtonConfig(txt.DONE, "done"),
+    "edit": IconButtonConfig(txt.EDIT, "edit"),
+    "exit": IconButtonConfig(txt.EXIT, "cancel"),
+    "exit-red": IconButtonConfig(txt.EXIT, "cancel", "red"),
+    "exit-orange": IconButtonConfig(txt.EXIT, "cancel", "orange"),
+    "new": IconButtonConfig(txt.NEW, "new"),
+    "next": IconButtonConfig(txt.NEXT, "next"),
+    "open": IconButtonConfig(txt.OPEN, "open"),
+    "paste": IconButtonConfig(txt.PASTE, "paste"),
+    "pause": IconButtonConfig(txt.PAUSE, "pause"),
+    "preferences": IconButtonConfig(txt.PREFERENCES, "preferences"),
+    "previous": IconButtonConfig(txt.PREVIOUS, "previous"),
+    "process": IconButtonConfig(txt.PROCESS, "process"),
+    "redo": IconButtonConfig(txt.REDO, "redo"),
+    "refresh": IconButtonConfig(txt.REFRESH, "refresh"),
+    "rename": IconButtonConfig(txt.RENAME, "rename"),
+    "report": IconButtonConfig(txt.REPORT, "report"),
+    "reset": IconButtonConfig(txt.RESET, "reset"),
+    "restore": IconButtonConfig(txt.RESTORE, "restore"),
+    "restore_database": IconButtonConfig(txt.RESTORE, "restore_database"),
+    "restore_page": IconButtonConfig(txt.RESTORE, "restore_page"),
+    "revert": IconButtonConfig(txt.REVERT, "revert"),
+    "run": IconButtonConfig(txt.RUN, "start"),
+    "save": IconButtonConfig(txt.SAVE, "save"),
+    "script": IconButtonConfig(txt.SCRIPT, "script"),
+    "search": IconButtonConfig(txt.SEARCH, "search"),
+    "send": IconButtonConfig(txt.SEND, "send"),
+    "start": IconButtonConfig(txt.START, "start"),
+    "update": IconButtonConfig(txt.UPDATE, "update"),
+    "upgrade": IconButtonConfig(txt.UPGRADE, "upgrade"),
+    "upload": IconButtonConfig(txt.UPLOAD, "upload"),
+    "use": IconButtonConfig(txt.USE, "done"),
+    "windows": IconButtonConfig(txt.WINDOWS, "windows"),
 }
 
 
@@ -272,7 +332,9 @@ def list_icon_buttons() -> None:
     """List of icon_button."""
     name_length, text_length, icon_length = 15, 10, 15
 
-    print((f"{'name':<{name_length}} {'text':<{text_length}} {'icon':<{icon_length}}"))
+    print(
+        f"{'name':<{name_length}} {'text':<{text_length}} {'icon':<{icon_length}}"
+    )
 
     print(
         f"{'-' * name_length:<{name_length}} "

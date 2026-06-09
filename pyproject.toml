@@ -1,6 +1,6 @@
 [project]
 name = "psiutils"
-version = "0.2.34"
+version = "0.2.35"
 description = "Various TKinter utilities."
 authors = [{name = "Jeff", "email" = "<jeffwatkins2000@gmail.com>"}]
 requires-python = '>= 3.10, < 3.13'
@@ -20,6 +20,7 @@ dependencies = [
     "pycairo>=1.28.0",
     "pygments>=2.19.2",
     "pytest>=9.0.2",
+    "ruff>=0.15.15",
     "structlog>=25.4.0",
     "tkcalendar>=1.6.1",
     "tkinterweb>=4.4.4",
@@ -40,3 +41,16 @@ dev = ['pytest']
 [build-system]
 requires = ['uv-build']
 build-backend = 'uv_build'
+
+# pyproject.toml
+[tool.ruff]
+line-length = 79
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "B", "UP"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+disallow_untyped_defs = true

@@ -34,6 +34,7 @@ psi_strings = {
     "NO_SUCH_FILE": "no such file or directory",
     "OK": "OK",
     "OPEN": "Open",
+    "PASTE": "Paste",
     "PAUSE": "Pause",
     "PREFERENCES": "Preferences",
     "PREVIOUS": "Prev",
