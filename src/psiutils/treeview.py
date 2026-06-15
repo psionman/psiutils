@@ -1,20 +1,30 @@
-
-from pathlib import Path
 import tkinter as tk
+from dataclasses import dataclass
+from pathlib import Path
 from tkinter import ttk
+
 import dateutil  # type: ignore
 from dateutil.parser import parse  # type: ignore
 from PIL import Image, ImageTk
-from dataclasses import dataclass
 
 CHECK_BOX_SIZE = (20, 20)
 
 
 @dataclass
-class ColumnDefn():
+class ColumnDefn:
     name: str
     heading: str
     width: int
+
+
+@dataclass(frozen=True)
+class TreeColumn:
+    """Definition of a Treeview column."""
+
+    key: str
+    heading: str
+    width: int
+    anchor: str
 
 
 class Treeview(ttk.Treeview):
@@ -38,35 +48,36 @@ class Treeview(ttk.Treeview):
                     width=col_defn.width,
                     minwidth=col_defn.width,
                     stretch=False,
-                    anchor="center")
-                self._heading('#0', col_defn.heading)
+                    anchor="center",
+                )
+                self._heading("#0", col_defn.heading)
             else:
                 self.column(
                     col_defn.name,
                     width=col_defn.width,
                     anchor="w",
-                    stretch=True)
+                    stretch=True,
+                )
                 self._heading(col_defn.name, col_defn.heading)
 
     @property
     def columns(self) -> dict[int, str]:
         return {
-            col_defn.name: column-1
+            col_defn.name: column - 1
             for column, col_defn in enumerate(self.column_defs)
-    }
+        }
 
     def _heading(self, col_id: str, heading: str) -> ttk.Treeview.heading:
         return self.heading(
             col_id,
             text=heading,
-            command=lambda c=col_id: self._sort_columns(c, False)
+            command=lambda c=col_id: self._sort_columns(c, False),
         )
 
     def populate(self, values: dict[tuple]) -> None:
         self.delete(*self.get_children())
         for item in values:
-            item = self.insert('', 'end', values=item)
-
+            item = self.insert("", "end", values=item)
 
     def select_item(self, column: int | str, value: str) -> None:
         if isinstance(column, str):
@@ -81,8 +92,8 @@ class Treeview(ttk.Treeview):
     def _sort_columns(self, col: int, reverse: bool) -> None:
         """Sort the Treeview by column."""
         children = [
-                (self.set(child, col), child) for child in self.get_children('')
-            ]
+            (self.set(child, col), child) for child in self.get_children("")
+        ]
         date_children = self._get_date_children(children)
         if date_children:
             children = date_children
@@ -94,7 +105,7 @@ class Treeview(ttk.Treeview):
             children.sort(reverse=reverse)
 
         for index, (val, child) in enumerate(children):
-            self.move(child, '', index)
+            self.move(child, "", index)
 
         self.heading(col, command=lambda: self._sort_columns(col, not reverse))
 
@@ -112,15 +123,14 @@ class Treeview(ttk.Treeview):
             return []
 
 
-
 def sort_treeview(tree: Treeview, col: int, reverse: bool) -> None:
     """Sort the Treeview by column."""
     print('*** psiutils  "sort_treeview" called: DEPRECATED ***')
-    print('Use psiutils.Treeviw class instead!!!')
+    print("Use psiutils.Treeviw class instead!!!")
 
     children = [
-            (tree.set(child, col), child) for child in tree.get_children('')
-        ]
+        (tree.set(child, col), child) for child in tree.get_children("")
+    ]
     is_date = True
     try:
         date_children = []
@@ -142,17 +152,13 @@ def sort_treeview(tree: Treeview, col: int, reverse: bool) -> None:
         children.sort(reverse=reverse)
 
     for index, (val, child) in enumerate(children):
-        tree.move(child, '', index)
+        tree.move(child, "", index)
 
     tree.heading(col, command=lambda: sort_treeview(tree, col, not reverse))
 
 
 class CheckTreeView(Treeview):
-    def __init__(
-            self,
-            master,
-            column_defs,
-            **kwargs):
+    def __init__(self, master, column_defs, **kwargs):
         """
 
         :param column_defs: a tuple defining column (key, text, width)
@@ -160,10 +166,9 @@ class CheckTreeView(Treeview):
         """
         super().__init__(master, column_defs, **kwargs)
         self["show"] = "tree headings"
-        (
-            self.unchecked_image,
-            self.checked_image
-        ) = self._get_checkbox_images()
+        (self.unchecked_image, self.checked_image) = (
+            self._get_checkbox_images()
+        )
 
         if "selectmode" not in kwargs:
             kwargs["selectmode"] = "none"
@@ -171,9 +176,10 @@ class CheckTreeView(Treeview):
             kwargs["show"] = "tree"
 
     def _get_checkbox_images(
-            self) -> tuple[ImageTk.PhotoImage, ImageTk.PhotoImage]:
+        self,
+    ) -> tuple[ImageTk.PhotoImage, ImageTk.PhotoImage]:
 
-        icon_path = f'{Path(__file__).parent}/icons/'
+        icon_path = f"{Path(__file__).parent}/icons/"
         unchecked_img = Image.open(f"{icon_path}checkbox_unchecked.png")
         unchecked_img = unchecked_img.resize(CHECK_BOX_SIZE, Image.LANCZOS)
         unchecked = ImageTk.PhotoImage(unchecked_img)
@@ -186,14 +192,10 @@ class CheckTreeView(Treeview):
 
     def populate(self, values: list[tuple], checked: bool = False) -> None:
         self.delete(*self.get_children())
-        item_checked = (self.checked_image
-                        if checked else self.unchecked_image)
+        item_checked = self.checked_image if checked else self.unchecked_image
         for item in values:
             iid = self.insert(
-                parent='',
-                index='end',
-                image=item_checked,
-                values=item
+                parent="", index="end", image=item_checked, values=item
             )
             if checked:
                 self.item(iid, tags=("checked",))
@@ -227,7 +229,7 @@ class CheckTreeView(Treeview):
         """
         checked_items = []
 
-        for iid in self.get_children(''):
+        for iid in self.get_children(""):
             tags = self.item(iid, "tags")
             if "checked" in tags:
                 values = self.item(iid, "values")
