@@ -1,5 +1,11 @@
 # Version  history for psiutils
 
+Version 1.0.2 - 16 June 2026
+
+1. Add separator to menus
+2. Fix bug in Buttons IconButton
+------------------------------
+
 Version 1.0.1 - 15 June 2026
 
 1. Add TreeColumn (dataclass)
@@ -419,6 +425,7 @@ Version 0.2.23 - 03 February 2026
 ## 0.1.0 - 7 October 2024
 
 1. Initial version
+
 
 
 

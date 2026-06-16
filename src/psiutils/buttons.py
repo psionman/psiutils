@@ -38,7 +38,7 @@ class IconButton(ttk.Frame):
         dimmable: bool = False,
         sticky: str = "",
         icon_path: str = "",
-        colour: str | tuple(int) = "",
+        colour: str | tuple[int] = "",
         **kwargs,
     ):
         super().__init__(master, borderwidth=1, relief="raised", **kwargs)

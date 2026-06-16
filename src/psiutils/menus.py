@@ -5,6 +5,12 @@ import tkinter as tk
 from tkinter import TclError
 
 
+class Separator:
+    """A separator item for use in a Menu."""
+    dimmable = False
+    menu = None
+
+
 class Menu(tk.Menu):
     def __init__(self, root: tk.Tk, menu_items: list = None) -> None:
         if menu_items is None:
@@ -13,8 +19,14 @@ class Menu(tk.Menu):
         self.menu_items = menu_items
         for menu_item in menu_items:
             menu_item.menu = self
-            self.add_command(label=menu_item.text, command=menu_item.command,
-                             underline=menu_item.underline,)
+            if isinstance(menu_item, Separator):
+                self.add_separator()
+            else:
+                self.add_command(
+                    label=menu_item.text,
+                    command=menu_item.command,
+                    underline=menu_item.underline,
+                )
 
     def enable(self, enable: bool = True) -> None:
         enable_menu_items(self, self.menu_items, enable)
