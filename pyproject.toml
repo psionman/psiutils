@@ -1,13 +1,16 @@
 [project]
 name = "psiutils"
-version = "1.0.2"
-description = "Various TKinter utilities."
-authors = [{name = "Jeff", "email" = "<jeffwatkins2000@gmail.com>"}]
-requires-python = '>= 3.10, < 3.13'
+version = "1.0.3"
+description = "Utilities used in Tkinter applications"
+authors = [
+    { name = "Jeff", email = "<jeffwatkins2000@gmail.com>" },
+]
+requires-python = ">= 3.10, < 3.13"
 readme = "README.md"
-
-include = ["HISTORY.md", "src/psiutils/icons/*.png"]
-
+include = [
+    "HISTORY.md",
+    "src/psiutils/icons/*.png",
+]
 dependencies = [
     "appdirs>=1.4.4",
     "iniconfig>=2.1.0",
@@ -35,22 +38,33 @@ source = "vcs"
 [tool.hatch.build.hooks.vcs]
 version-file = "src/psiutils/_version.py"
 
-[dependency-groups]
-dev = ['pytest']
-
-[build-system]
-requires = ['uv-build']
-build-backend = 'uv_build'
-
-# pyproject.toml
 [tool.ruff]
 line-length = 79
 target-version = "py311"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "W", "B", "UP"]
+select = [
+    "E",
+    "F",
+    "I",
+    "N",
+    "W",
+    "B",
+    "UP",
+]
 
 [tool.mypy]
 python_version = "3.11"
 warn_return_any = true
 disallow_untyped_defs = true
+
+[dependency-groups]
+dev = [
+    "pytest",
+]
+
+[build-system]
+requires = [
+    "uv-build",
+]
+build-backend = "uv_build"

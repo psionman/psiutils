@@ -17,7 +17,8 @@ def ic_init():
         ic.configureOutput(includeContext=True)
         install()
     except ModuleNotFoundError:
-        print('*** Icream module not found ***')
+        # print('*** Icream module not found ***')
+        pass
 
     except ImportError:  # Graceful fallback if IceCream isn't installed.
         def get_ic(*args):

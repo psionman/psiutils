@@ -4,6 +4,9 @@ from copy import copy
 
 
 psi_strings = {
+    "ABOUT": "About",
+    "AUTHOR": "Author",
+    "ACCEPT": "Accept",
     "BACKUP": "Backup",
     "BUILD": "Build",
     "CANCEL": "Cancel",
@@ -11,6 +14,7 @@ psi_strings = {
     "CLEAR": "Clear",
     "CLOSE": "Close",
     "CODE": "Code",
+    "COLOUR": "Colour",
     "COMPARE": "Compare",
     "CONFIG": "Config",
     "CONVERT": "Convert",
@@ -27,6 +31,7 @@ psi_strings = {
     "EXIT": "Exit",
     "HELP": "Help",
     "INCREMENT_ARROW": "▲",
+    "KONSOLE": "Konsole",
     "LOGS": "Logs",
     "NEW": "New",
     "NEXT": "Next",
@@ -52,6 +57,7 @@ psi_strings = {
     "SCRIPT": "Script",
     "SAVE_PDF": "Save as PDF",
     "SEARCH": "Search",
+    "SELECT": "Select",
     "SEND": "Send",
     "START": "Start",
     "UNDO": "Undo",
@@ -59,6 +65,8 @@ psi_strings = {
     "UPGRADE": "Upgrade",
     "UPLOAD": "Upload",
     "USE": "Use",
+    "VERSION": " Version",
+    "WINDSURF": "Windsurf",
     "WINDOWS": "Windows",
     "YES": "Yes",
 }

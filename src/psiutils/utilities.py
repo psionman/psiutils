@@ -86,13 +86,14 @@ def geometry(config: TomlConfig, file: Path, default: str = '') -> str:
         return default
 
 
-def window_resize(master: tk.Tk, file: str, *args) -> None:
-    match = master.root.geometry().split('+')
+def window_resize(root: tk.Tk, file: str, config: dict | None = None, *args) -> None:
+    if not config:
+        config = {}
+    match = root.geometry().split('+')
     window_geometry = (
-        f'{master.root.winfo_width()}x{master.root.winfo_height()}+'
-        f'{master.root.winfo_x()}+{match[2]}')
-    master.config.read()
-    new_geometry = master.config.geometry
+        f'{root.winfo_width()}x{root.winfo_height()}+'
+        f'{root.winfo_x()}+{match[2]}')
+    new_geometry = config.geometry
     new_geometry[Path(file).stem] = window_geometry
-    master.config.update('geometry', new_geometry)
-    master.config.save()
+    config.update('geometry', new_geometry)
+    config.save()

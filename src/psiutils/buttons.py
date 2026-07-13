@@ -286,6 +286,7 @@ icon_buttons = {
     "compare": IconButtonConfig(txt.COMPARE, "compare"),
     "compare-orange": IconButtonConfig(txt.COMPARE, "compare", "orange"),
     "config": IconButtonConfig(txt.CONFIG, "gear"),
+    "console": IconButtonConfig(txt.KONSOLE, "console"),
     "convert": IconButtonConfig(txt.CONVERT, "convert"),
     "copy_docs": IconButtonConfig(txt.COPY, "copy_docs"),
     "copy_clipboard": IconButtonConfig(txt.COPY, "copy_clipboard"),
@@ -297,6 +298,7 @@ icon_buttons = {
     "exit": IconButtonConfig(txt.EXIT, "cancel"),
     "exit-red": IconButtonConfig(txt.EXIT, "cancel", "red"),
     "exit-orange": IconButtonConfig(txt.EXIT, "cancel", "orange"),
+    "help": IconButtonConfig(txt.HELP, "help"),
     "new": IconButtonConfig(txt.NEW, "new"),
     "next": IconButtonConfig(txt.NEXT, "next"),
     "open": IconButtonConfig(txt.OPEN, "open"),
@@ -325,6 +327,7 @@ icon_buttons = {
     "upload": IconButtonConfig(txt.UPLOAD, "upload"),
     "use": IconButtonConfig(txt.USE, "done"),
     "windows": IconButtonConfig(txt.WINDOWS, "windows"),
+    "windsurf": IconButtonConfig(txt.WINDSURF, "windsurf"),
 }
 
 
