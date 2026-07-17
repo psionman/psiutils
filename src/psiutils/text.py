@@ -2,7 +2,6 @@
 
 from copy import copy
 
-
 psi_strings = {
     "ABOUT": "About",
     "AUTHOR": "Author",
@@ -111,7 +110,9 @@ class Text:
             output = f"{item:.<20} {strings[item]}"
             if item in compare:
                 if strings[item] != compare[item]:
-                    output = f"{output}, {compare[item]} <{'-' * 10} //override//"
+                    output = (
+                        f"{output}, {compare[item]} <{'-' * 10} //override//"
+                    )
                     overrides += 1
                 elif item not in psi_strings:
                     output = f"{output} <{'=' * 10} //app string//"

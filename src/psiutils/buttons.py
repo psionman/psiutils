@@ -39,6 +39,7 @@ class IconButton(ttk.Frame):
         sticky: str = "",
         icon_path: str = "",
         colour: str | tuple[int] = "",
+        tag: str = "",
         **kwargs,
     ):
         super().__init__(master, borderwidth=1, relief="raised", **kwargs)
@@ -47,6 +48,7 @@ class IconButton(ttk.Frame):
         self.text = text
         self.icon = icon
         self.colour = colour
+        self.tag = tag
 
         # Icon and text
         if not icon_path:
@@ -166,6 +168,7 @@ class ButtonFrame(ttk.Frame):
         self._buttons = []
         self._enabled = False
         self.orientation = orientation
+        self.tagged_buttons = {}
 
         if "enabled" in kwargs:
             self._enabled = kwargs["enabled"]
@@ -183,12 +186,14 @@ class ButtonFrame(ttk.Frame):
         command: object = None,
         dimmable: bool = False,
         text: str = "",
+        tag: str = "",
     ) -> IconButton:
         button = self.icon_buttons[id_]
         button.dimmable = dimmable
         button.command = command
         if text:
             button.text = text
+        button.tag = tag
         return button
 
     @property
@@ -203,6 +208,15 @@ class ButtonFrame(ttk.Frame):
             self._vertical_buttons()
         elif self.orientation == tk.HORIZONTAL:
             self._horizontal_buttons()
+
+        self.tagged_buttons = {}
+        for button in self._buttons:
+            if button.tag:
+                self.tagged_buttons[button.tag] = button
+
+    def get_button(self, tag: str) -> IconButton:
+        if tag in self.tagged_buttons:
+            return self.tagged_buttons[tag]
 
     @property
     def enabled(self) -> bool:

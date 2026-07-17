@@ -1,5 +1,8 @@
 # Version  history for psiutils
 
+## Version 1.0.4 - 17 July 2026
+1. Add tag to IconButton and tagged_buttons to ButtonFrame
+
 ## Version 1.0.3 - 13 July 2026
 1. Change window-resize options
 
@@ -428,6 +431,7 @@ Version 0.2.23 - 03 February 2026
 ## 0.1.0 - 7 October 2024
 
 1. Initial version
+
 
 
 
