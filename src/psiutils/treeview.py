@@ -24,7 +24,7 @@ class TreeColumn:
     key: str
     heading: str
     width: int
-    anchor: str
+    anchor: str = tk.W
 
 
 class Treeview(ttk.Treeview):

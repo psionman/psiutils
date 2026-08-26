@@ -1,9 +1,10 @@
 """Constants for the tkinter psiutils."""
+
 from enum import Enum, auto
 
 from .known_paths import get_documents_dir, get_downloads_dir
 
-DEFAULT_GEOMETRY = '500x400'
+DEFAULT_GEOMETRY = "500x400"
 
 DOCUMENTS_DIR = get_documents_dir()
 DOWNLOADS_DIR = get_downloads_dir()
@@ -15,33 +16,24 @@ PADL = (PAD, 0)
 PADT = (PAD, 0)
 PADB = (0, PAD)
 
-LARGE_FONT = ('Arial', 16)
-BOLD_FONT = ('Arial', 12, 'bold')
+LARGE_FONT = ("Arial", 16)
+BOLD_FONT = ("Arial", 12, "bold")
 
 # Colours
 COLOURS = {
-    'pale-umber': '#ffcfa0',
-    'pale-red': '#ff9999',
-    'pale-grey': '#e8e8e8'
+    "pale-umber": "#ffcfa0",
+    "pale-red": "#ff9999",
+    "pale-grey": "#e8e8e8",
 }
 
-CSV_FILE_TYPES = (
-    ('csv files', '*.csv'),
-    ('All files', '*.*')
-)
+CSV_FILE_TYPES = (("csv files", "*.csv"), ("All files", "*.*"))
 
-TXT_FILE_TYPES = (
-    ('csv files', '*.txt'),
-    ('All files', '*.*')
-)
+TXT_FILE_TYPES = (("csv files", "*.txt"), ("All files", "*.*"))
 
-XML_FILE_TYPES = (
-    ('xml files', '*.xml'),
-    ('All files', '*.*')
-)
+XML_FILE_TYPES = (("xml files", "*.xml"), ("All files", "*.*"))
 
 
-class Pad():
+class Pad:
     W = (0, PAD)
     E = (PAD, 0)
     N = (PAD, 0)
@@ -69,6 +61,6 @@ class Status(Enum):
 
 
 class WidgetState(str, Enum):
-    NORMAL = 'normal'
-    READONLY = 'readonly'
-    DISABLED = 'disabled'
+    NORMAL = "normal"
+    READONLY = "readonly"
+    DISABLED = "disabled"
