@@ -1,6 +1,9 @@
 class ModuleCaller:
     def __init__(self, root, parsed_args: dict) -> None:
-        self.modules["list"] = (self._list, "List module definitions")
+        self.modules["modules"] = (
+            self._list_modules,
+            "List module definitions",
+        )
         self.args = parsed_args
         if self._select_module():
             self.root = root
@@ -11,10 +14,10 @@ class ModuleCaller:
     def _select_module(self) -> bool:
         """Return True if a valid, runnable module was selected."""
         module = self.args.module
-        if module in ("list", None) or module not in self.modules:
-            if module not in ("list", None):
-                print(f"*** Invalid function name: {module} ***")
-            self._list()
+        if module in ("modules", None) or module not in self.modules:
+            if module not in ("modules", None):
+                print(f"*** Invalid module name: {module} ***")
+            self._list_modules()
             return False
         return True
 
@@ -33,9 +36,9 @@ class ModuleCaller:
             raise ValueError(message)
         return value
 
-    def _list(self) -> None:
+    def _list_modules(self) -> None:
         keys = sorted(self.modules.keys())
-        padding = max(len(key) for key in keys)
+        padding = max(len(key) for key in keys) + 3
         for key in keys:
             _, help_text = self.modules[key]
             if help_text:

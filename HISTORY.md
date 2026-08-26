@@ -1,5 +1,8 @@
 # Version  history for psiutils
 
+## Version 1.0.6 - 26 August 2026
+1. Switck module caller list to modules
+
 ## Version 1.0.5 - 26 August 2026
 1. Add ModuleCaller
 
@@ -434,6 +437,7 @@ Version 0.2.23 - 03 February 2026
 ## 0.1.0 - 7 October 2024
 
 1. Initial version
+
 
 
 
