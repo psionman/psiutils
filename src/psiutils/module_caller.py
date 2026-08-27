@@ -1,3 +1,7 @@
+# module_caller.py
+import argparse
+
+
 class ModuleCaller:
     def __init__(self, root, parsed_args: dict) -> None:
         self.modules["modules"] = (
@@ -45,3 +49,10 @@ class ModuleCaller:
                 print(f"{key:.<{padding}} {help_text}")
             else:
                 print(key)
+
+    @classmethod
+    def create_parser(cls, arg_definitions) -> argparse.ArgumentParser:
+        parser = argparse.ArgumentParser()
+        for arg in arg_definitions:
+            parser.add_argument(arg[0], nargs="?", default=None, help=arg[1])
+        return parser.parse_args()

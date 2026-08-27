@@ -1,9 +1,9 @@
 # Version  history for psiutils
 
-## Version 1.0.6 - 26 August 2026
-1. Switck module caller list to modules
+## Version 1.0.7 - 27 August 2026
+1. Create create_parser in ModuleCaller
 
-## Version 1.0.5 - 26 August 2026
+## Version 1.0.6 - 26 August 2026
 1. Add ModuleCaller
 
 ## Version 1.0.4 - 17 July 2026
