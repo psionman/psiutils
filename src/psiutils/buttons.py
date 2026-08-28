@@ -31,10 +31,11 @@ class IconButtonConfig:
 class IconButton(ttk.Frame):
     def __init__(
         self,
-        master,
-        text,
-        icon,
+        master: tk.Frame,
+        text: str,
+        icon: str,
         command=None,
+        *,
         dimmable: bool = False,
         sticky: str = "",
         icon_path: str = "",
@@ -49,6 +50,9 @@ class IconButton(ttk.Frame):
         self.icon = icon
         self.colour = colour
         self.tag = tag
+
+        if text == "Account":
+            print(text, icon_path or None)
 
         # Icon and text
         if not icon_path:
