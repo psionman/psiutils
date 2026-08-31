@@ -1,7 +1,8 @@
 # Version  history for psiutils
 
-## version 1.0.8 - 28 August 2026
-1. Add version command to justfile
+## Version 1.0.8 - 28 August 2026
+1. Rewrite IconButton
+2. Add version command to justfile
 
 ## Version 1.0.7 - 27 August 2026
 1. Create create_parser in ModuleCaller
@@ -423,4 +424,5 @@
 ## Version 0.1.0 - 7 October 2024
 
 1. Initial version
+
 

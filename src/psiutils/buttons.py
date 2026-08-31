@@ -1,10 +1,13 @@
 """Button class for Tkinter applications."""
 
+import json
+import os
 import tkinter as tk
 from dataclasses import dataclass
 from pathlib import Path
 from tkinter import ttk
 
+from dotenv import load_dotenv
 from PIL import Image, ImageTk
 
 from psiutils.constants import PAD, Pad
@@ -12,6 +15,14 @@ from psiutils.text import Text
 from psiutils.widgets import HAND, clickable_widget, enter_widget
 
 txt = Text()
+
+load_dotenv()
+ICON_IMAGE_PATH = os.getenv("ICON_IMAGE_PATH")
+ICON_BUTTON_CONFIG_PATH = os.getenv("ICON_BUTTON_CONFIG_PATH")
+
+
+DEFAULT_ICON = "question-red"
+MISSING_DEFINITION = "missing-definition"
 
 COLOURS = {
     "red": (255, 0, 0),
@@ -25,7 +36,7 @@ COLOURS = {
 class IconButtonConfig:
     text: str
     icon: str
-    colour: str | None = None
+    # colour: str | None = None
 
 
 class IconButton(ttk.Frame):
@@ -34,12 +45,13 @@ class IconButton(ttk.Frame):
         master: tk.Frame,
         text: str,
         icon: str,
-        command=None,
-        *,
+        command: callable | None = None,
         dimmable: bool = False,
+        *,
         sticky: str = "",
         icon_path: str = "",
-        colour: str | tuple[int] = "",
+        icon_colour: str | tuple[int] = "",
+        text_colour: str | tuple[int] = "",
         tag: str = "",
         **kwargs,
     ):
@@ -48,11 +60,9 @@ class IconButton(ttk.Frame):
         self._state = tk.NORMAL
         self.text = text
         self.icon = icon
-        self.colour = colour
+        self.icon_colour = icon_colour
+        self.text_colour = text_colour
         self.tag = tag
-
-        if text == "Account":
-            print(text, icon_path or None)
 
         # Icon and text
         if not icon_path:
@@ -60,7 +70,11 @@ class IconButton(ttk.Frame):
         photo_image = self._get_photo_image(icon_path, icon)
 
         self.button_label = ttk.Label(
-            self, text=text, image=photo_image, compound=tk.LEFT
+            self,
+            text=text,
+            image=photo_image,
+            compound=tk.LEFT,
+            foreground=self.text_colour,
         )
         self.button_label.image = photo_image  # Prevent garbage collection
         self.button_label.pack(padx=(3, 5), pady=5)
@@ -77,9 +91,11 @@ class IconButton(ttk.Frame):
         path: Path,
         icon: str,
     ) -> ImageTk.PhotoImage:
-        image = (
-            Image.open(f"{path}{icon}.png").resize((16, 16)).convert("RGBA")
-        )
+        icon_path = f"{path}{icon}.png"
+        if not Path(icon_path).exists():
+            icon_path = f"{path}{DEFAULT_ICON}.png"
+            return None
+        image = Image.open(icon_path).resize((16, 16)).convert("RGBA")
 
         image = self._colour_image(image)
 
@@ -87,14 +103,14 @@ class IconButton(ttk.Frame):
         return photo_image
 
     def _colour_image(self, image: Image) -> Image:
-        if not self.colour:
+        if not self.icon_colour:
             return image
 
-        if isinstance(self.colour, str):
-            r, g, b = COLOURS[self.colour]
+        if isinstance(self.icon_colour, str):
+            r, g, b = COLOURS[self.icon_colour]
 
-        if isinstance(self.colour, tuple):
-            r, g, b = self.colour
+        if isinstance(self.icon_colour, tuple):
+            r, g, b = self.icon_colour
 
         pixels = image.load()
 
@@ -166,6 +182,8 @@ class ButtonFrame(ttk.Frame):
         self,
         master: tk.Frame,
         orientation: str = tk.HORIZONTAL,
+        button_config_path: str = "",
+        icon_path: str = "",
         **kwargs: dict,
     ) -> None:
         super().__init__(master, **kwargs)
@@ -176,13 +194,10 @@ class ButtonFrame(ttk.Frame):
 
         if "enabled" in kwargs:
             self._enabled = kwargs["enabled"]
-
-        self.icon_buttons = {
-            name: IconButton(
-                self, config.text, config.icon, colour=config.colour
-            )
-            for name, config in icon_buttons.items()
-        }
+        self.button_config_path = button_config_path
+        self.icon_path = icon_path
+        self.button_configs = self._read_buttons_config()
+        # self.icon_buttons = self._get_icon_buttons()
 
     def icon_button(
         self,
@@ -190,15 +205,29 @@ class ButtonFrame(ttk.Frame):
         command: object = None,
         dimmable: bool = False,
         text: str = "",
+        icon_colour: str | tuple[int] = "",
+        text_colour: str | tuple[int] = "",
         tag: str = "",
     ) -> IconButton:
-        button = self.icon_buttons[id_]
-        button.dimmable = dimmable
-        button.command = command
-        if text:
-            button.text = text
-        button.tag = tag
-        return button
+
+        if id_ not in self.button_configs:
+            text = id_.capitalize()
+            id_ = MISSING_DEFINITION
+        button_defn = self.button_configs.get(id_)
+        button_config = IconButtonConfig(*button_defn)
+        if not button_config:
+            raise ValueError(f"Button {id_} not found")
+        return IconButton(
+            self,
+            text or button_config.text,
+            button_config.icon,
+            command=command,
+            dimmable=dimmable,
+            icon_colour=icon_colour,
+            text_colour=text_colour,
+            icon_path=self.icon_path,
+            tag=tag,
+        )
 
     @property
     def buttons(self) -> list[Button]:
@@ -264,8 +293,6 @@ class ButtonFrame(ttk.Frame):
             if col == len(self.buttons) - 1:
                 self.columnconfigure(col, weight=1)
                 col += 1
-            # if not button.sticky:
-            #     button.sticky = tk.W
             button.grid(row=0, column=col, sticky=button.sticky, padx=padx)
             clickable_widget(button)
 
@@ -283,6 +310,20 @@ class ButtonFrame(ttk.Frame):
                     else:
                         button.disable()
 
+    def _read_buttons_config(self) -> dict[str, tuple[str, str]]:
+        if not self.button_config_path:
+            return {}
+        try:
+            with open(self.button_config_path, encoding="utf8") as f_json:
+                try:
+                    return json.load(f_json)
+                except json.decoder.JSONDecodeError:
+                    print("JSON decode error")
+                    return {}
+        except FileNotFoundError:
+            print(f"File not found {self.button_config_path}")
+            return {}
+
 
 def enable_buttons(buttons: list[Button], enable: bool = True):
     state = tk.NORMAL if enable else tk.DISABLED
@@ -290,63 +331,6 @@ def enable_buttons(buttons: list[Button], enable: bool = True):
         if button.dimmable:
             button["state"] = state
             button.bind("<Enter>", enter_widget)
-
-
-icon_buttons = {
-    "backup": IconButtonConfig(txt.BACKUP, "backup"),
-    "build": IconButtonConfig(txt.BUILD, "build"),
-    "check": IconButtonConfig(txt.CHECK, "check"),
-    "clear": IconButtonConfig(txt.CLEAR, "clear"),
-    "close": IconButtonConfig(txt.CLOSE, "cancel"),
-    "close-red": IconButtonConfig(txt.CLOSE, "cancel", "red"),
-    "code": IconButtonConfig(txt.CODE, "code"),
-    "code-blue": IconButtonConfig(txt.CODE, "code", "blue"),
-    "compare": IconButtonConfig(txt.COMPARE, "compare"),
-    "compare-orange": IconButtonConfig(txt.COMPARE, "compare", "orange"),
-    "config": IconButtonConfig(txt.CONFIG, "gear"),
-    "console": IconButtonConfig(txt.KONSOLE, "console"),
-    "convert": IconButtonConfig(txt.CONVERT, "convert"),
-    "copy_docs": IconButtonConfig(txt.COPY, "copy_docs"),
-    "copy_clipboard": IconButtonConfig(txt.COPY, "copy_clipboard"),
-    "delete": IconButtonConfig(txt.DELETE, "delete"),
-    "download": IconButtonConfig(txt.DOWNLOAD, "download"),
-    "diff": IconButtonConfig(txt.DIFF, "diff"),
-    "done": IconButtonConfig(txt.DONE, "done"),
-    "edit": IconButtonConfig(txt.EDIT, "edit"),
-    "exit": IconButtonConfig(txt.EXIT, "cancel"),
-    "exit-red": IconButtonConfig(txt.EXIT, "cancel", "red"),
-    "exit-orange": IconButtonConfig(txt.EXIT, "cancel", "orange"),
-    "help": IconButtonConfig(txt.HELP, "help"),
-    "new": IconButtonConfig(txt.NEW, "new"),
-    "next": IconButtonConfig(txt.NEXT, "next"),
-    "open": IconButtonConfig(txt.OPEN, "open"),
-    "paste": IconButtonConfig(txt.PASTE, "paste"),
-    "pause": IconButtonConfig(txt.PAUSE, "pause"),
-    "preferences": IconButtonConfig(txt.PREFERENCES, "preferences"),
-    "previous": IconButtonConfig(txt.PREVIOUS, "previous"),
-    "process": IconButtonConfig(txt.PROCESS, "process"),
-    "redo": IconButtonConfig(txt.REDO, "redo"),
-    "refresh": IconButtonConfig(txt.REFRESH, "refresh"),
-    "rename": IconButtonConfig(txt.RENAME, "rename"),
-    "report": IconButtonConfig(txt.REPORT, "report"),
-    "reset": IconButtonConfig(txt.RESET, "reset"),
-    "restore": IconButtonConfig(txt.RESTORE, "restore"),
-    "restore_database": IconButtonConfig(txt.RESTORE, "restore_database"),
-    "restore_page": IconButtonConfig(txt.RESTORE, "restore_page"),
-    "revert": IconButtonConfig(txt.REVERT, "revert"),
-    "run": IconButtonConfig(txt.RUN, "start"),
-    "save": IconButtonConfig(txt.SAVE, "save"),
-    "script": IconButtonConfig(txt.SCRIPT, "script"),
-    "search": IconButtonConfig(txt.SEARCH, "search"),
-    "send": IconButtonConfig(txt.SEND, "send"),
-    "start": IconButtonConfig(txt.START, "start"),
-    "update": IconButtonConfig(txt.UPDATE, "update"),
-    "upgrade": IconButtonConfig(txt.UPGRADE, "upgrade"),
-    "upload": IconButtonConfig(txt.UPLOAD, "upload"),
-    "use": IconButtonConfig(txt.USE, "done"),
-    "windows": IconButtonConfig(txt.WINDOWS, "windows"),
-    "windsurf": IconButtonConfig(txt.WINDSURF, "windsurf"),
-}
 
 
 def list_icon_buttons() -> None:
