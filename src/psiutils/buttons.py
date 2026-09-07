@@ -3,6 +3,7 @@
 import json
 import os
 import tkinter as tk
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from tkinter import ttk
@@ -45,7 +46,7 @@ class IconButton(ttk.Frame):
         master: tk.Frame,
         text: str,
         icon: str,
-        command: callable | None = None,
+        command: Callable | None = None,
         dimmable: bool = False,
         *,
         sticky: str = "",
@@ -65,8 +66,8 @@ class IconButton(ttk.Frame):
         self.tag = tag
 
         # Icon and text
-        if not icon_path:
-            icon_path = f"{Path(__file__).parent}/icons/"
+        # if not icon_path:
+        #     icon_path = f"{Path(__file__).parent}/icons/"
         photo_image = self._get_photo_image(icon_path, icon)
 
         self.button_label = ttk.Label(
@@ -91,9 +92,10 @@ class IconButton(ttk.Frame):
         path: Path,
         icon: str,
     ) -> ImageTk.PhotoImage:
-        icon_path = f"{path}{icon}.png"
-        if not Path(icon_path).exists():
-            icon_path = f"{path}{DEFAULT_ICON}.png"
+        icon_path = Path(path, f"{icon}.png")
+        if not icon_path.exists():
+            print(f"Icon not found: '{self.text}' {icon_path}")
+            icon_path = Path(path, f"{DEFAULT_ICON}.png")
             return None
         image = Image.open(icon_path).resize((16, 16)).convert("RGBA")
 
@@ -209,11 +211,12 @@ class ButtonFrame(ttk.Frame):
         text_colour: str | tuple[int] = "",
         tag: str = "",
     ) -> IconButton:
-
         if id_ not in self.button_configs:
             text = id_.capitalize()
             id_ = MISSING_DEFINITION
         button_defn = self.button_configs.get(id_)
+        if not button_defn:
+            button_defn = ["", ""]
         button_config = IconButtonConfig(*button_defn)
         if not button_config:
             raise ValueError(f"Button {id_} not found")
@@ -318,7 +321,7 @@ class ButtonFrame(ttk.Frame):
                 try:
                     return json.load(f_json)
                 except json.decoder.JSONDecodeError:
-                    print("JSON decode error")
+                    print(f"JSON decode error {self.button_config_path}")
                     return {}
         except FileNotFoundError:
             print(f"File not found {self.button_config_path}")

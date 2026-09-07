@@ -27,7 +27,16 @@ class PsiText(tk.Text):
 
     def _proxy(self, command, *args):
         cmd = (self._orig, command) + args
-        result = self.tk.call(cmd)
+        try:
+            result = self.tk.call(cmd)
+        except tk.TclError as e:
+            if "bad text index" in str(e):
+                # Known Tk quirk: internal selection-anchor index
+                # (e.g. "tk::anchor1") can be referenced before it's
+                # initialized during certain click/drag sequences.
+                # Harmless — safe to ignore.
+                return None
+            raise
 
         if command in ("insert", "delete", "replace"):
             self.event_generate("<<TextModified>>")

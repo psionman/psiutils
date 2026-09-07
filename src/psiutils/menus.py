@@ -7,6 +7,7 @@ from tkinter import TclError
 
 class Separator:
     """A separator item for use in a Menu."""
+
     dimmable = False
     menu = None
 
@@ -31,15 +32,18 @@ class Menu(tk.Menu):
     def enable(self, enable: bool = True) -> None:
         enable_menu_items(self, self.menu_items, enable)
 
+    def disable(self) -> None:
+        self.enable(False)
 
-class MenuItem():
+
+class MenuItem:
     def __init__(
-            self,
-            text: str,
-            command: object,
-            dimmable: bool = False,
-            **kwargs: dict,
-            ) -> None:
+        self,
+        text: str,
+        command: object,
+        dimmable: bool = False,
+        **kwargs: dict,
+    ) -> None:
 
         self.text: str = text
         self.command: object = command
@@ -47,14 +51,14 @@ class MenuItem():
         self.underline = None
         self.menu = None
 
-        if 'disabled' in kwargs and kwargs['disabled']:
+        if "disabled" in kwargs and kwargs["disabled"]:
             self.state = tk.DISABLED
             self.disable()
-        if 'underline' in kwargs:
-            self.underline = kwargs['underline']
+        if "underline" in kwargs:
+            self.underline = kwargs["underline"]
 
     def __repr__(self) -> str:
-        return f'MenuItem: {self.text}'
+        return f"MenuItem: {self.text}"
 
     def enable(self, enable: bool = True) -> None:
         enable_menu_items(self.menu, [self], enable)
