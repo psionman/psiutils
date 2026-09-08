@@ -1,6 +1,6 @@
 [project]
 name = "psiutils"
-version = "2.0.0"
+version = "2.0.1"
 description = "Utilities used in Tkinter applications"
 authors = [
     { name = "Jeff", email = "<jeffwatkins2000@gmail.com>" },

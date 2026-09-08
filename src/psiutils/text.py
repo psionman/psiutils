@@ -1,6 +1,8 @@
 """Handle standard text for psiutils."""
 
+import json
 from copy import copy
+from pathlib import Path
 
 psi_strings = {
     "ABOUT": "About",
@@ -18,6 +20,7 @@ psi_strings = {
     "CONFIG": "Config",
     "CONVERT": "Convert",
     "COPY": "Copy",
+    "DATA_DIRECTORY": "Data directory",
     "DECREMENT_ARROW": "▼",
     "DELETE": "Delete",
     "DELETE_THESE_ITEMS": "Are you sure you want to delete these item(s)?",
@@ -37,6 +40,7 @@ psi_strings = {
     "NO": "No",
     "NO_SUCH_FILE": "no such file or directory",
     "OK": "OK",
+    "ONLINE_HELP": "Online help",
     "OPEN": "Open",
     "PASTE": "Paste",
     "PAUSE": "Pause",
@@ -70,13 +74,13 @@ psi_strings = {
     "YES": "Yes",
 }
 
-strings = copy(psi_strings)
+psi_strings = copy(psi_strings)
 
 
 class Text:
     """Combines package level and psiutils strings."""
 
-    def __init__(self) -> None:
+    def __init__(self, text_file: Path | None = None) -> None:
         """
         Initialise the object with attributes based on the key-value pairs
         in the `strings` dictionary.
@@ -87,11 +91,25 @@ class Text:
         Returns:
             None
         """
-        self.strings = strings
-        for key, string in strings.items():
+
+        self.strings = self._get_strings(text_file)
+        for key, string in self.strings.items():
             setattr(self, key, string)
 
-        # Optionally display contents of `strings`
+    def _get_strings(self, text_file: Path | None = None) -> dict:
+        """Get the strings dictionary."""
+        if text_file:
+            try:
+                with open(text_file) as f:
+                    return json.load(f)
+            except json.JSONDecodeError:
+                print(f"Error: {text_file} is not a valid JSON file")
+                return psi_strings
+            except FileNotFoundError:
+                print(f"Error: {text_file} not found")
+                return psi_strings
+        else:
+            return psi_strings
 
     def display(self, compare: dict = None) -> None:
         """Print out contents of `strings` and compare if

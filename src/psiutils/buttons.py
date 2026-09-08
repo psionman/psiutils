@@ -1,7 +1,6 @@
 """Button class for Tkinter applications."""
 
 import json
-import os
 import tkinter as tk
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -18,8 +17,6 @@ from psiutils.widgets import HAND, clickable_widget, enter_widget
 txt = Text()
 
 load_dotenv()
-ICON_IMAGE_PATH = os.getenv("ICON_IMAGE_PATH")
-ICON_BUTTON_CONFIG_PATH = os.getenv("ICON_BUTTON_CONFIG_PATH")
 
 
 DEFAULT_ICON = "question-red"
