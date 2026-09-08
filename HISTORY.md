@@ -1,5 +1,8 @@
 # Version  history for psiutils
 
+## Version 2.0.2 - 08 September 2026
+1. Fix text display bug in Text.display()
+
 ## Version 2.0.1 - 08 September 2026
 1. moved text to .local/share/psiutils/text/text.json
 
@@ -435,6 +438,7 @@
 ## Version 0.1.0 - 7 October 2024
 
 1. Initial version
+
 
 
 

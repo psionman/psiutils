@@ -4,7 +4,7 @@ import json
 from copy import copy
 from pathlib import Path
 
-psi_strings = {
+strings = {
     "ABOUT": "About",
     "AUTHOR": "Author",
     "ACCEPT": "Accept",
@@ -74,7 +74,7 @@ psi_strings = {
     "YES": "Yes",
 }
 
-psi_strings = copy(psi_strings)
+psi_strings = copy(strings)
 
 
 class Text:
@@ -121,13 +121,13 @@ class Text:
             compare = {}
 
         for key, item in compare.items():
-            if key not in strings:
-                strings[key] = item
+            if key not in self.strings:
+                self.strings[key] = item
 
-        for item in sorted(list(strings)):
-            output = f"{item:.<20} {strings[item]}"
+        for item in sorted(list(self.strings)):
+            output = f"{item:.<20} {self.strings[item]}"
             if item in compare:
-                if strings[item] != compare[item]:
+                if self.strings[item] != compare[item]:
                     output = (
                         f"{output}, {compare[item]} <{'-' * 10} //override//"
                     )
