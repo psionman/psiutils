@@ -1,6 +1,9 @@
 # Version  history for psiutils
 
 ## Version 2.0.0 - 07 September 2026
+1. Improve window resize handling
+
+## Version 1.0.9 - 07 September 2026
 1. psiutils path in .local
 2. Fix bug in widgets _proxy
 3. Menu disable
@@ -429,6 +432,7 @@
 ## Version 0.1.0 - 7 October 2024
 
 1. Initial version
+
 
 
 

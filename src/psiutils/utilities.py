@@ -2,6 +2,7 @@
 
 import ctypes
 import platform
+import re
 import sys
 import tkinter as tk
 from pathlib import Path
@@ -15,6 +16,9 @@ from psiutils.text import Text
 
 psi_logger = logger
 txt = Text()
+
+GEOMETRY_RE = re.compile(r"^(\d+)x(\d+)([+-]\d+)([+-]\d+)$")
+TITLE_BAR_HEIGHT = 28  # from `xprop _NET_FRAME_EXTENTS` on this KWin setup
 
 
 def display_icon(
@@ -80,9 +84,19 @@ def geometry(config: TomlConfig, file: Path, default: str = "") -> str:
     if not default:
         default = DEFAULT_GEOMETRY
     try:
-        return config.geometry[Path(file).stem]
+        geometry = config.geometry[Path(file).stem]
+        match = GEOMETRY_RE.match(geometry)
+        if not match:
+            return default
+
+        width, height, x, y = match.groups()
+        y_adjusted = int(y) - TITLE_BAR_HEIGHT
+        return f"{width}x{height}{x}+{y_adjusted}"
     except KeyError:
         return default
+
+
+_resize_job = {}
 
 
 def window_resize(
@@ -90,12 +104,24 @@ def window_resize(
 ) -> None:
     if not config:
         config = {}
-    match = root.geometry().split("+")
-    window_geometry = (
-        f"{root.winfo_width()}x{root.winfo_height()}+"
-        f"{root.winfo_x()}+{match[2]}"
+
+    key = Path(file).stem
+    if key in _resize_job:
+        root.after_cancel(_resize_job[key])
+
+    _resize_job[key] = root.after(
+        300, lambda: _save_geometry(root, key, config)
     )
+
+
+def _save_geometry(root: tk.Tk, key: str, config) -> None:
+    match = GEOMETRY_RE.match(root.geometry())
+    if not match:
+        return
+    width, height, x, y = match.groups()
+    window_geometry = f"{width}x{height}{x}{y}"
+
     new_geometry = config.geometry
-    new_geometry[Path(file).stem] = window_geometry
+    new_geometry[key] = window_geometry
     config.update("geometry", new_geometry)
     config.save()
