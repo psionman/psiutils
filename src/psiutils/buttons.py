@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from tkinter import ttk
 
-from dotenv import load_dotenv
 from PIL import Image, ImageTk
 
 from psiutils.constants import PAD, Pad
@@ -15,8 +14,6 @@ from psiutils.text import Text
 from psiutils.widgets import HAND, clickable_widget, enter_widget
 
 txt = Text()
-
-load_dotenv()
 
 
 DEFAULT_ICON = "question-red"
@@ -91,7 +88,9 @@ class IconButton(ttk.Frame):
     ) -> ImageTk.PhotoImage:
         icon_path = Path(path, f"{icon}.png")
         if not icon_path.exists():
-            print(f"Icon not found: '{self.text}' {icon_path}")
+            print(
+                f"Icon not found: Text: {self.text} Icon: '{icon}' Path: {icon_path}"
+            )
             icon_path = Path(path, f"{DEFAULT_ICON}.png")
             return None
         image = Image.open(icon_path).resize((16, 16)).convert("RGBA")

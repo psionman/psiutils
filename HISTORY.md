@@ -1,5 +1,8 @@
 # Version  history for psiutils
 
+## Version 2.0.3 - 08 September 2026
+1. Remove open dot env in buttons
+
 ## Version 2.0.2 - 08 September 2026
 1. Fix text display bug in Text.display()
 
@@ -438,6 +441,7 @@
 ## Version 0.1.0 - 7 October 2024
 
 1. Initial version
+
 
 
 
