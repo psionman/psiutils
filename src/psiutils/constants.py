@@ -27,10 +27,15 @@ COLOURS = {
 }
 
 CSV_FILE_TYPES = (("csv files", "*.csv"), ("All files", "*.*"))
-
-TXT_FILE_TYPES = (("csv files", "*.txt"), ("All files", "*.*"))
-
+TXT_FILE_TYPES = (("txt files", "*.txt"), ("All files", "*.*"))
 XML_FILE_TYPES = (("xml files", "*.xml"), ("All files", "*.*"))
+
+
+class FileTypes(Enum):
+    CSV = CSV_FILE_TYPES
+    TXT = TXT_FILE_TYPES
+    XML = XML_FILE_TYPES
+    XLS = ("xlsx files", "*.xlsx"), ("All files", "*.*")
 
 
 class Pad:

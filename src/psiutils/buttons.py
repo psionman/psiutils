@@ -15,7 +15,6 @@ from psiutils.widgets import HAND, clickable_widget, enter_widget
 
 txt = Text()
 
-
 DEFAULT_ICON = "question-red"
 MISSING_DEFINITION = "missing-definition"
 
@@ -31,7 +30,6 @@ COLOURS = {
 class IconButtonConfig:
     text: str
     icon: str
-    # colour: str | None = None
 
 
 class IconButton(ttk.Frame):
@@ -58,10 +56,9 @@ class IconButton(ttk.Frame):
         self.icon_colour = icon_colour
         self.text_colour = text_colour
         self.tag = tag
+        self.icon_path = icon_path
 
         # Icon and text
-        # if not icon_path:
-        #     icon_path = f"{Path(__file__).parent}/icons/"
         photo_image = self._get_photo_image(icon_path, icon)
 
         self.button_label = ttk.Label(
@@ -88,9 +85,12 @@ class IconButton(ttk.Frame):
     ) -> ImageTk.PhotoImage:
         icon_path = Path(path, f"{icon}.png")
         if not icon_path.exists():
-            print(
-                f"Icon not found: Text: {self.text} Icon: '{icon}' Path: {icon_path}"
-            )
+            if icon_path.name != icon_path.stem:
+                print(
+                    f"Icon not found: Text: {self.text} "
+                    f"Icon: '{icon}' "
+                    f"Path: {icon_path}"
+                )
             icon_path = Path(path, f"{DEFAULT_ICON}.png")
             return None
         image = Image.open(icon_path).resize((16, 16)).convert("RGBA")
@@ -330,25 +330,3 @@ def enable_buttons(buttons: list[Button], enable: bool = True):
         if button.dimmable:
             button["state"] = state
             button.bind("<Enter>", enter_widget)
-
-
-def list_icon_buttons() -> None:
-    """List of icon_button."""
-    name_length, text_length, icon_length = 15, 10, 15
-
-    print(
-        f"{'name':<{name_length}} {'text':<{text_length}} {'icon':<{icon_length}}"
-    )
-
-    print(
-        f"{'-' * name_length:<{name_length}} "
-        f"{'-' * text_length:<{text_length}} "
-        f"{'-' * icon_length:<{icon_length}}"
-    )
-
-    for name, button in icon_buttons.items():
-        print(
-            f"{name:<{name_length}} "
-            f"{button[0]:<{text_length}} "
-            f"{button[1]:<{icon_length}}"
-        )

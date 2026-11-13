@@ -1,11 +1,13 @@
 """
-    Implement DayPicker an TimePicker widgets for psiutils.
+Implement DayPicker an TimePicker widgets for psiutils.
 """
+
 import tkinter as tk
-from tkinter import ttk
-from datetime import datetime, timedelta
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from functools import partial
+from tkinter import ttk
+
 from tkcalendar import DateEntry
 
 from psiutils.text import Text
@@ -16,8 +18,8 @@ PAD = 2
 TIME_WIDTH = 3
 INCREMENT_BUTTON_SIZE = 2
 INCREMENT_BUTTON_FONT_SIZE = 8
-DATE_FORMAT = '%d/%m/%Y'
-PICKER_DATE_PATTERN = 'dd/MM/yyyy'
+DATE_FORMAT = "%d/%m/%Y"
+PICKER_DATE_PATTERN = "dd/MM/yyyy"
 MAX_HOURS = 23
 MAX_MINS = 59
 TALL_COMBO_PADDING = 6
@@ -42,10 +44,13 @@ class DatePicker(tk.Frame):
 
         selected_date = picker.date
     """
+
     def __init__(
-            self, master: tk.Frame,
-            initial_date: datetime = None,
-            date_format: str = ''):
+        self,
+        master: tk.Frame,
+        initial_date: datetime = None,
+        date_format: str = "",
+    ):
         """
         Initialize the DatePicker widget.
 
@@ -63,14 +68,16 @@ class DatePicker(tk.Frame):
             date_format = DATE_FORMAT
 
         self._date_input = tk.StringVar(
-            value=initial_date.strftime(DATE_FORMAT))
+            value=initial_date.strftime(DATE_FORMAT)
+        )
 
         style = ttk.Style()
         style.configure(
-            'Increment.TButton',
-            font=('Helvetica', INCREMENT_BUTTON_FONT_SIZE),
-            padding=0,)
-        style.configure('Tall.TCombobox', padding=TALL_COMBO_PADDING)
+            "Increment.TButton",
+            font=("Helvetica", INCREMENT_BUTTON_FONT_SIZE),
+            padding=0,
+        )
+        style.configure("Tall.TCombobox", padding=TALL_COMBO_PADDING)
 
         # Exposed for testing and integration
         self.date_picker = None
@@ -100,8 +107,8 @@ class DatePicker(tk.Frame):
             text=txt.INCREMENT_ARROW,
             command=partial(self._date_increment, self._date_input),
             width=INCREMENT_BUTTON_SIZE,
-            style='Increment.TButton',
-            )
+            style="Increment.TButton",
+        )
         self.increment_button.grid(row=0, column=column, padx=PAD)
 
         self.decrement_button = ttk.Button(
@@ -109,8 +116,8 @@ class DatePicker(tk.Frame):
             text=txt.DECREMENT_ARROW,
             command=partial(self._date_increment, self._date_input, -1),
             width=INCREMENT_BUTTON_SIZE,
-            style='Increment.TButton',
-            )
+            style="Increment.TButton",
+        )
         self.decrement_button.grid(row=1, column=column, padx=PAD)
 
         column += 1
@@ -118,7 +125,8 @@ class DatePicker(tk.Frame):
         return frame
 
     def _date_picker(
-            self, master: tk.Frame, textvariable: tk.StringVar) -> DateEntry:
+        self, master: tk.Frame, textvariable: tk.StringVar
+    ) -> DateEntry:
         """
         Create a calendar-based date entry widget.
 
@@ -136,7 +144,7 @@ class DatePicker(tk.Frame):
             month=self.date.month,
             day=self.date.day,
             textvariable=textvariable,
-            )
+        )
 
     @property
     def date(self) -> datetime:
@@ -146,12 +154,8 @@ class DatePicker(tk.Frame):
         Returns:
             datetime: The selected date parsed from the input field.
         """
-        day, month, year = map(int, self._date_input.get().split('/'))
-        return datetime(
-            year=int(year),
-            month=int(month),
-            day=int(day)
-        )
+        day, month, year = map(int, self._date_input.get().split("/"))
+        return datetime(year=int(year), month=int(month), day=int(day))
 
     @date.setter
     def date(self, value: datetime) -> None:
@@ -161,10 +165,10 @@ class DatePicker(tk.Frame):
         self._date_input.set(value.strftime(DATE_FORMAT))
 
     def _date_increment(
-            self,
-            textvariable: tk.StringVar,
-            increment: int = 1,
-            ) -> None:
+        self,
+        textvariable: tk.StringVar,
+        increment: int = 1,
+    ) -> None:
         """
         Increment or decrement the selected date by a number of days.
 
@@ -178,7 +182,7 @@ class DatePicker(tk.Frame):
 
 
 @dataclass
-class Time():
+class Time:
     """
     Simple value object representing a time selection.
 
@@ -187,6 +191,7 @@ class Time():
         minute (int): Minute value (0-59).
         second (int): Second value (0-59).
     """
+
     hour: int = 0
     minute: int = 0
     second: int = 0
@@ -222,12 +227,14 @@ class TimePicker(tk.Frame):
         selected_time = picker.time
         print(selected_time.hour, selected_time.minute, selected_time.second)
     """
+
     def __init__(
-            self,
-            master: tk.Frame,
-            time: Time = Time(0, 0, 0),
-            use_seconds: bool = False,
-            use_labels: bool = False):
+        self,
+        master: tk.Frame,
+        time: Time | None = None,
+        use_seconds: bool = False,
+        use_labels: bool = False,
+    ):
         """
         Initialize the TimePicker widget.
 
@@ -238,15 +245,17 @@ class TimePicker(tk.Frame):
             use_labels (bool): Whether to show labels above each selector.
         """
         super().__init__(master)
+        if not time:
+            time = Time(0, 0, 0)
         self.use_seconds = use_seconds
         self.use_labels = use_labels
 
-        self._hour_input = tk.StringVar(value=f'{time.hour:02d}')
-        self._minute_input = tk.StringVar(value=f'{time.minute:02d}')
-        self._second_input = tk.StringVar(value=f'{time.second:02d}')
+        self._hour_input = tk.StringVar(value=f"{time.hour:02d}")
+        self._minute_input = tk.StringVar(value=f"{time.minute:02d}")
+        self._second_input = tk.StringVar(value=f"{time.second:02d}")
 
         style = ttk.Style()
-        style.configure('Increment.TButton', font=('Helvetica', 8))
+        style.configure("Increment.TButton", font=("Helvetica", 8))
 
         # Exposed for testing and integration
         self.time_pickers = {}
@@ -270,16 +279,19 @@ class TimePicker(tk.Frame):
             row = self._label_row(frame, row)
 
         hour_timer = self._timer_element(
-            frame, self._hour_input, 'hours', MAX_HOURS)
+            frame, self._hour_input, "hours", MAX_HOURS
+        )
         hour_timer.grid(row=row, column=HOUR_COL)
 
         minute_timer = self._timer_element(
-            frame, self._minute_input, 'minutes')
+            frame, self._minute_input, "minutes"
+        )
         minute_timer.grid(row=row, column=MINUTE_COL)
 
         if self.use_seconds:
             second_timer = self._timer_element(
-                frame, self._second_input, 'seconds')
+                frame, self._second_input, "seconds"
+            )
             second_timer.grid(row=row, column=SECOND_COL)
 
         return frame
@@ -299,24 +311,24 @@ class TimePicker(tk.Frame):
         Returns:
             int: The row index used for the labels (unchanged).
         """
-        label = ttk.Label(frame, text='Hour')
+        label = ttk.Label(frame, text="Hour")
         label.grid(row=row, column=HOUR_COL, sticky=tk.W)
 
-        label = ttk.Label(frame, text='Mins')
+        label = ttk.Label(frame, text="Mins")
         label.grid(row=row, column=MINUTE_COL, sticky=tk.W)
 
         if self.use_seconds:
-            label = ttk.Label(frame, text='Secs')
+            label = ttk.Label(frame, text="Secs")
             label.grid(row=row, column=SECOND_COL, sticky=tk.E)
         return row + 1
 
     def _timer_element(
-            self,
-            master: tk.Frame,
-            textvariable: tk.StringVar,
-            name: str,
-            max_value: int = MAX_MINS,
-            ) -> tk.Frame:
+        self,
+        master: tk.Frame,
+        textvariable: tk.StringVar,
+        name: str,
+        max_value: int = MAX_MINS,
+    ) -> tk.Frame:
         """
         Create a single timer control consisting of a combobox and
         increment/decrement buttons.
@@ -335,11 +347,16 @@ class TimePicker(tk.Frame):
         self.time_pickers[name] = ttk.Combobox(
             frame,
             textvariable=textvariable,
-            values=[f'{x:02d}' for x in range(max_value+1)],
+            values=[f"{x:02d}" for x in range(max_value + 1)],
             width=TIME_WIDTH,
-            style='Tall.TCombobox',
-            )
-        self.time_pickers[name].grid(row=0, column=column, rowspan=2, sticky=tk.W)
+            style="Tall.TCombobox",
+        )
+        self.time_pickers[name].grid(
+            row=0, column=column, rowspan=2, sticky=tk.W
+        )
+        self.time_pickers[name].bind(
+            "<<ComboboxSelected>>", self._time_changed
+        )
 
         column += 1
 
@@ -348,8 +365,8 @@ class TimePicker(tk.Frame):
             text=txt.INCREMENT_ARROW,
             command=partial(self._time_increment, textvariable, 1, max_value),
             width=INCREMENT_BUTTON_SIZE,
-            style='Increment.TButton',
-            )
+            style="Increment.TButton",
+        )
         self.increment_buttons[name].grid(row=0, column=column, padx=PAD)
 
         self.decrement_buttons[name] = ttk.Button(
@@ -357,16 +374,14 @@ class TimePicker(tk.Frame):
             text=txt.DECREMENT_ARROW,
             command=partial(self._time_increment, textvariable, -1, max_value),
             width=INCREMENT_BUTTON_SIZE,
-            style='Increment.TButton',
-            )
+            style="Increment.TButton",
+        )
         self.decrement_buttons[name].grid(row=1, column=column, padx=PAD)
         return frame
 
     def _time_increment(
-            self,
-            textvariable: tk.StringVar,
-            increment,
-            max_value) -> None:
+        self, textvariable: tk.StringVar, increment, max_value
+    ) -> None:
         """
         Increment or decrement a time value with wrap-around behavior.
 
@@ -380,7 +395,8 @@ class TimePicker(tk.Frame):
             value = max_value
         if value > max_value:
             value = 0
-        textvariable.set(f'{value:02d}')
+        textvariable.set(f"{value:02d}")
+        self._time_changed()
 
     @property
     def time(self) -> Time:
@@ -397,9 +413,9 @@ class TimePicker(tk.Frame):
         """
         Set the currently selected time.
         """
-        self._hour_input.set(f'{value.hour:02d}')
-        self._minute_input.set(f'{value.minute:02d}')
-        self._second_input.set(f'{value.second:02d}')
+        self._hour_input.set(f"{value.hour:02d}")
+        self._minute_input.set(f"{value.minute:02d}")
+        self._second_input.set(f"{value.second:02d}")
 
     @property
     def hour(self) -> int:
@@ -426,3 +442,6 @@ class TimePicker(tk.Frame):
             minute=self.minute,
             second=self.second,
         )
+
+    def _time_changed(self, *args) -> None:
+        self.event_generate("<<TimeChanged>>")

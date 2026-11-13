@@ -1,5 +1,12 @@
 # Version  history for psiutils
 
+## Version 2.0.4 - 28 September 2026
+1. Fix icon not found print if icon is ""
+2. Create FileTypes enum
+3. Add tag to menu
+4. Geometry in utilities now takes title bar into account
+
+
 ## Version 2.0.3 - 08 September 2026
 1. Remove open dot env in buttons
 
@@ -54,7 +61,7 @@
 
 ## Version 0.2.32 - 02 March 2026
 
-1. 
+1.
 
 ## Version0.2.31 - 02 March 2026
 
@@ -441,10 +448,3 @@
 ## Version 0.1.0 - 7 October 2024
 
 1. Initial version
-
-
-
-
-
-
-

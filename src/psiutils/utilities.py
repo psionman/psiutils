@@ -18,7 +18,9 @@ psi_logger = logger
 txt = Text()
 
 GEOMETRY_RE = re.compile(r"^(\d+)x(\d+)([+-]\d+)([+-]\d+)$")
-TITLE_BAR_HEIGHT = 28  # from `xprop _NET_FRAME_EXTENTS` on this KWin setup
+
+
+_resize_job = {}  # needed in widows_resize
 
 
 def display_icon(
@@ -80,25 +82,6 @@ def enable_frame(parent: tk.Frame, enable: bool = True) -> None:
             child.configure(state=state)
 
 
-def geometry(config: TomlConfig, file: Path, default: str = "") -> str:
-    if not default:
-        default = DEFAULT_GEOMETRY
-    try:
-        geometry = config.geometry[Path(file).stem]
-        match = GEOMETRY_RE.match(geometry)
-        if not match:
-            return default
-
-        width, height, x, y = match.groups()
-        y_adjusted = int(y) - TITLE_BAR_HEIGHT
-        return f"{width}x{height}{x}+{y_adjusted}"
-    except KeyError:
-        return default
-
-
-_resize_job = {}
-
-
 def window_resize(
     root: tk.Tk, file: str, config: dict | None = None, *args
 ) -> None:
@@ -114,6 +97,18 @@ def window_resize(
     )
 
 
+def _get_saved_geometry(
+    config: TomlConfig, file: Path, default: str = ""
+) -> str:
+    """Return the saved geometry for a window, unadjusted."""
+    default = default or DEFAULT_GEOMETRY
+    try:
+        saved = config.geometry[Path(file).stem]
+    except KeyError:
+        return default
+    return saved if GEOMETRY_RE.match(saved) else default
+
+
 def _save_geometry(root: tk.Tk, key: str, config) -> None:
     match = GEOMETRY_RE.match(root.geometry())
     if not match:
@@ -125,3 +120,23 @@ def _save_geometry(root: tk.Tk, key: str, config) -> None:
     new_geometry[key] = window_geometry
     config.update("geometry", new_geometry)
     config.save()
+
+
+def restore_geometry(
+    root: tk.Tk, config: TomlConfig, file: Path, default: str = ""
+) -> None:
+    """Apply saved geometry, correcting any offset the WM introduces."""
+    wanted = _get_saved_geometry(config, file, default)
+    root.geometry(wanted)
+    root.after(100, lambda: _settle(root, wanted))
+
+
+def _settle(root: tk.Tk, wanted: str) -> None:
+    want = GEOMETRY_RE.match(wanted)
+    got = GEOMETRY_RE.match(root.geometry())
+    if not (want and got):
+        return
+    dx = int(got.group(3)) - int(want.group(3))
+    dy = int(got.group(4)) - int(want.group(4))
+    if dx or dy:
+        root.geometry(f"+{int(want.group(3)) - dx}+{int(want.group(4)) - dy}")
