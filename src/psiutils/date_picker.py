@@ -4,7 +4,7 @@ Implement DayPicker an TimePicker widgets for psiutils.
 
 import tkinter as tk
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from functools import partial
 from tkinter import ttk
 
@@ -181,35 +181,35 @@ class DatePicker(tk.Frame):
         textvariable.set(new_date.strftime(DATE_FORMAT))
 
 
-@dataclass
-class Time:
-    """
-    Simple value object representing a time selection.
+# @dataclass
+# class time:
+#     """
+#     Simple value object representing a time selection.
 
-    Attributes:
-        hour (int): Hour value (0-24).
-        minute (int): Minute value (0-59).
-        second (int): Second value (0-59).
-    """
+#     Attributes:
+#         hour (int): Hour value (0-24).
+#         minute (int): Minute value (0-59).
+#         second (int): Second value (0-59).
+#     """
 
-    hour: int = 0
-    minute: int = 0
-    second: int = 0
+#     hour: int = 0
+#     minute: int = 0
+#     second: int = 0
 
-    def on(self, date: datetime) -> datetime:
-        """Return a datetime by applying this time to the given date."""
-        return datetime(
-            year=date.year,
-            month=date.month,
-            day=date.day,
-            hour=self.hour,
-            minute=self.minute,
-            second=self.second,
-        )
+#     def on(self, date: datetime) -> datetime:
+#         """Return a datetime by applying this time to the given date."""
+#         return datetime(
+#             year=date.year,
+#             month=date.month,
+#             day=date.day,
+#             hour=self.hour,
+#             minute=self.minute,
+#             second=self.second,
+#         )
 
 
-DAY_START = Time(0, 0, 0)
-MIDNIGHT = Time(23, 59, 59)
+DAY_START = time(0, 0, 0)
+MIDNIGHT = time(23, 59, 59)
 
 
 class TimePicker(tk.Frame):
@@ -231,7 +231,9 @@ class TimePicker(tk.Frame):
     def __init__(
         self,
         master: tk.Frame,
-        time: Time | None = None,
+        time: time | None = None,
+        use_hours: bool = True,
+        use_minutes: bool = True,
         use_seconds: bool = False,
         use_labels: bool = False,
     ):
@@ -240,13 +242,15 @@ class TimePicker(tk.Frame):
 
         Args:
             master (tk.Frame): Parent widget.
-            time (Time): The initial time setting (hour, minute, second)
+            time (time): The initial time setting (hour, minute, second)
             use_seconds (bool): Whether to include a seconds selector.
             use_labels (bool): Whether to show labels above each selector.
         """
         super().__init__(master)
         if not time:
-            time = Time(0, 0, 0)
+            time = time(0, 0, 0)
+        self.use_hours = use_hours
+        self.use_minutes = use_minutes
         self.use_seconds = use_seconds
         self.use_labels = use_labels
 
@@ -278,15 +282,17 @@ class TimePicker(tk.Frame):
         if self.use_labels:
             row = self._label_row(frame, row)
 
-        hour_timer = self._timer_element(
-            frame, self._hour_input, "hours", MAX_HOURS
-        )
-        hour_timer.grid(row=row, column=HOUR_COL)
+        if self.use_hours:
+            hour_timer = self._timer_element(
+                frame, self._hour_input, "hours", MAX_HOURS
+            )
+            hour_timer.grid(row=row, column=HOUR_COL)
 
-        minute_timer = self._timer_element(
-            frame, self._minute_input, "minutes"
-        )
-        minute_timer.grid(row=row, column=MINUTE_COL)
+        if self.use_minutes:
+            minute_timer = self._timer_element(
+                frame, self._minute_input, "minutes"
+            )
+            minute_timer.grid(row=row, column=MINUTE_COL)
 
         if self.use_seconds:
             second_timer = self._timer_element(
@@ -399,17 +405,17 @@ class TimePicker(tk.Frame):
         self._time_changed()
 
     @property
-    def time(self) -> Time:
+    def time(self) -> time:
         """
-        Get the currently selected time as a Time object.
+        Get the currently selected time as a time object.
 
         Returns:
-            Time: The selected hour, minute, and second values.
+            time: The selected hour, minute, and second values.
         """
-        return Time(self.hour, self.minute, self.second)
+        return time(self.hour, self.minute, self.second)
 
     @time.setter
-    def time(self, value: Time) -> None:
+    def time(self, value: time) -> None:
         """
         Set the currently selected time.
         """

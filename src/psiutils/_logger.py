@@ -1,11 +1,12 @@
 # logging_setup.py
 import logging
-from pathlib import Path
 from logging.handlers import RotatingFileHandler
+from pathlib import Path
+
 import appdirs
 import structlog
 
-LOG_FILE_NAME = 'app.log'
+LOG_FILE_NAME = "app.log"
 MAX_BYTES = 5_000_000
 BACKUP_COUNT = 5
 
@@ -26,13 +27,25 @@ def psi_logger(app_name: str, level=logging.INFO):
     """
 
     log_file = _log_file(app_name)
-    console_handler = _console_handler(level)
-    file_handler = _file_handler(log_file, level)
 
     root_logger = logging.getLogger()
     root_logger.setLevel(level)
-    root_logger.addHandler(console_handler)
-    root_logger.addHandler(file_handler)
+
+    if not any(
+        getattr(h, "name", None) == f"{app_name}_console"
+        for h in root_logger.handlers
+    ):
+        console_handler = _console_handler(level)
+        console_handler.name = f"{app_name}_console"
+        root_logger.addHandler(console_handler)
+
+    if not any(
+        getattr(h, "name", None) == f"{app_name}_file"
+        for h in root_logger.handlers
+    ):
+        file_handler = _file_handler(log_file, level)
+        file_handler.name = f"{app_name}_file"
+        root_logger.addHandler(file_handler)
 
     structlog.configure(
         processors=_processors(),
@@ -59,7 +72,7 @@ def _console_handler(level=logging.INFO) -> logging.StreamHandler:
     console_handler.setFormatter(
         structlog.stdlib.ProcessorFormatter(
             processor=structlog.dev.ConsoleRenderer(),
-            foreign_pre_chain=[structlog.processors.TimeStamper(fmt='iso')],
+            foreign_pre_chain=[structlog.processors.TimeStamper(fmt="iso")],
         )
     )
     return console_handler
@@ -71,13 +84,13 @@ def _file_handler(log_file: Path, level=logging.INFO) -> RotatingFileHandler:
         str(log_file),
         maxBytes=MAX_BYTES,
         backupCount=BACKUP_COUNT,
-        encoding='utf-8'
+        encoding="utf-8",
     )
     file_handler.setLevel(level)
     file_handler.setFormatter(
         structlog.stdlib.ProcessorFormatter(
             processor=structlog.processors.JSONRenderer(),
-            foreign_pre_chain=[structlog.processors.TimeStamper(fmt='iso')],
+            foreign_pre_chain=[structlog.processors.TimeStamper(fmt="iso")],
         )
     )
     return file_handler
@@ -85,7 +98,7 @@ def _file_handler(log_file: Path, level=logging.INFO) -> RotatingFileHandler:
 
 def _processors() -> list:
     return [
-        structlog.processors.TimeStamper(fmt='iso'),
+        structlog.processors.TimeStamper(fmt="iso"),
         structlog.stdlib.add_log_level,
         structlog.stdlib.add_logger_name,
         structlog.stdlib.PositionalArgumentsFormatter(),

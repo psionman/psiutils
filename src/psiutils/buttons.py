@@ -297,17 +297,9 @@ class ButtonFrame(ttk.Frame):
 
     @staticmethod
     def _enable_buttons(buttons: list[Button], enable: bool = True):
-        state = tk.NORMAL if enable else tk.DISABLED
         for button in buttons:
             if button.dimmable:
-                if isinstance(button, Button):
-                    button["state"] = state
-                    button.bind("<Enter>", enter_widget)
-                elif isinstance(button, IconButton):
-                    if enable:
-                        button.enable()
-                    else:
-                        button.disable()
+                button.enable(enable)
 
     def _read_buttons_config(self) -> dict[str, tuple[str, str]]:
         if not self.button_config_path:

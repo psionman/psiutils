@@ -9,7 +9,7 @@ from .utilities import psi_logger
 # must be package name i.e. directory under /src/
 __app_name__ = "psiutils"
 
-logger = psi_logger(__app_name__)
+# logger = psi_logger(__app_name__)
 
 meta = metadata(__app_name__)
 __summary__: str = meta["Summary"]

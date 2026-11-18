@@ -15,6 +15,7 @@ class ColumnDefn:
     name: str
     heading: str
     width: int
+    anchor: str = tk.W
 
 
 @dataclass(frozen=True)
@@ -33,6 +34,7 @@ class Treeview(ttk.Treeview):
         if not column_defs:
             column_defs = {}
         self.column_defs = column_defs
+        self["show"] = "headings"
 
         self._configure_columns()
 
@@ -41,8 +43,9 @@ class Treeview(ttk.Treeview):
         self["columns"] = column_ids[1:]
 
         # Configure each column
-        for index, col_defn in enumerate(self.column_defs):
-            if index == 0:
+        first = True
+        for col_defn in self.column_defs:
+            if first:
                 self.column(
                     "#0",
                     width=col_defn.width,
@@ -51,14 +54,16 @@ class Treeview(ttk.Treeview):
                     anchor="center",
                 )
                 self._heading("#0", col_defn.heading)
-            else:
-                self.column(
-                    col_defn.name,
-                    width=col_defn.width,
-                    anchor="w",
-                    stretch=True,
-                )
-                self._heading(col_defn.name, col_defn.heading)
+                first = False
+                continue
+
+            self.column(
+                col_defn.name,
+                width=col_defn.width,
+                anchor=col_defn.anchor,
+                stretch=True,
+            )
+            self._heading(col_defn.name, col_defn.heading)
 
     @property
     def columns(self) -> dict[int, str]:
@@ -76,8 +81,13 @@ class Treeview(ttk.Treeview):
 
     def populate(self, values: dict[tuple]) -> None:
         self.delete(*self.get_children())
-        for item in values:
-            item = self.insert("", "end", values=item)
+
+        if isinstance(values, list):
+            for item in values:
+                self.insert("", tk.END, values=item)
+        elif isinstance(values, dict):
+            for key, item in values.items():
+                self.insert("", tk.END, values=item, iid=key)
 
     def select_item(self, column: int | str, value: str) -> None:
         if isinstance(column, str):
@@ -190,17 +200,17 @@ class CheckTreeView(Treeview):
         checked = ImageTk.PhotoImage(checked_img)
         return (unchecked, checked)
 
-    def populate(self, values: list[tuple], checked: bool = False) -> None:
-        self.delete(*self.get_children())
-        item_checked = self.checked_image if checked else self.unchecked_image
-        for item in values:
-            iid = self.insert(
-                parent="", index="end", image=item_checked, values=item
-            )
-            if checked:
-                self.item(iid, tags=("checked",))
-            else:
-                self.item(iid, tags=("unchecked"))
+    # def populate(self, values: list[tuple], checked: bool = False) -> None:
+    #     self.delete(*self.get_children())
+    #     item_checked = self.checked_image if checked else self.unchecked_image
+    #     for item in values:
+    #         iid = self.insert(
+    #             parent="", index="end", image=item_checked, values=item
+    #         )
+    #         if checked:
+    #             self.item(iid, tags=("checked",))
+    #         else:
+    #             self.item(iid, tags=("unchecked"))
 
     def item_click(self, event) -> int:
         iid = self.identify_row(event.y)
